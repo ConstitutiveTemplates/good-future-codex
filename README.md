@@ -33,5 +33,5 @@ sources:                       # the citations the section rests on
 - **Sources are load-bearing.** Every section's `why` names the real
   authority (statute, opinion, standard) it descends from.
 
-Consumer: [python-copier-template](https://github.com/kasi-x/python-copier-template)
+Consumer: [python-copier-template](https://github.com/ConstitutiveTemplates/python-copier-template)
 (vendors into `_shared/ethics/`; see its `docs/explanations/ethics-external.md`).
