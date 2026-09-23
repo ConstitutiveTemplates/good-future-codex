@@ -35,3 +35,17 @@ sources:                       # the citations the section rests on
 
 Consumer: [python-copier-template](https://github.com/ConstitutiveTemplates/python-copier-template)
 (vendors into `_shared/ethics/`; see its `docs/explanations/ethics-external.md`).
+
+## Placement & conditions (MANIFEST.yml)
+
+`sections/MANIFEST.yml` is the distribution contract: every section declares
+**where** it wants to land (`placement`: `agents_md` / `charter` /
+`legal_md` / `standalone`) and **under what abstract condition** (`when`:
+`always` / `scraping` / `oj_code` / `mcp` / `data_science` / `web_api` /
+`commercial` / `eu_market` / `jp` / `ai_assisted`).
+
+The `when` vocabulary is deliberately abstract — the codex never names a
+consumer's flag. A consumer maps each abstract condition to its own gating
+(this template's `REGISTRY.yml` maps `scraping` → `scraping_effective`,
+`oj_code` → `oj_code`, ...). The codex owns the *intent*; the consumer owns
+the *wiring*.
