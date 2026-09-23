@@ -8,7 +8,7 @@ gating logic, no enforcement. Consumers decide which sections apply.
 ## Layout
 
 ```
-sections/<id>.md.jinja   one file per section; frontmatter + prose body
+sections/<class>/<id>.md.jinja   one file per section; frontmatter + prose body
 ```
 
 Frontmatter (per section):
