@@ -1,5 +1,6 @@
 {# ethics: id=baseline-pki-chain version=2026-09-21.2 status=active
-   triggers=["tls","cert","trust-store","pinning","mtls","ca_bundle"] #}
+   triggers=["tls","cert","trust-store","pinning","mtls","ca_bundle"]
+   sources=["https://letsencrypt.org/certificates/", "https://letsencrypt.org/2023/07/10/cross-sign-expiration", "https://letsencrypt.org/2024/04/12/changes-to-issuance-chains", "https://community.letsencrypt.org/t/isrg-root-x2-cross-signed-by-isrg-root-x1/239124", "https://community.cloudflare.com/t/clarification-about-email-upcoming-lets-encrypt-certificate-chain-change/628713"] #}
 # PKIチェーン再編 — 中間証明書・発行チェーンをハードコードしない
 
 > **適用条件**: TLSクライアントの実装、証明書ピン留め、trust storeの

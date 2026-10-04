@@ -1,0 +1,49 @@
+name: drift-watch
+
+# Weekly review-freshness scan: section review_by dates that are due/expired
+# and in-body source URLs that fail HEAD probes. Opens or updates ONE issue
+# labeled codex-drift so the inbox does not flood; closes it when a run is
+# clean.
+
+on:
+  schedule:
+    - cron: "0 7 * * 1" # Mondays 07:00 UTC (one hour after law-map's run)
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: true
+      - name: Drift report
+        run: |
+          uv run --with pyyaml python tools/validate.py --drift > drift.txt 2>&1 || true
+          cat drift.txt
+          cat drift.txt >> "$GITHUB_STEP_SUMMARY"
+          if grep -Eq '\[drift\] (EXPIRED|due)|<-- FLAGGED' drift.txt; then
+            echo "FOUND=1" >> "$GITHUB_ENV"
+          fi
+      - name: Open or update drift issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          label="codex-drift"
+          gh label create "$label" --color E11D48 --description "Section review_by expired/due or dead source URL" --force || true
+          body=$(cat drift.txt)
+          issue=$(gh issue list --state open --label "$label" --json number --jq '.[0].number // empty' | head -1)
+          if [ "${FOUND:-}" = "1" ]; then
+            if [ -n "$issue" ]; then
+              gh issue edit "$issue" --title "Codex drift report $(date -u +%Y-%m-%d)" --body "$body"
+            else
+              gh issue create --title "Codex drift report $(date -u +%Y-%m-%d)" --label "$label" --body "$body"
+            fi
+          elif [ -n "$issue" ]; then
+            gh issue close "$issue" --comment "drift resolved"
+          fi

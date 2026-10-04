@@ -8,20 +8,22 @@ gating logic, no enforcement. Consumers decide which sections apply.
 ## Layout
 
 ```
-sections/<class>/<id>.md.jinja   one file per section; frontmatter + prose body
+sections/<tier>/<slug>.md.jinja   one file per section; header comment + prose body
 ```
 
-Frontmatter (per section):
+Header (per section, a jinja comment — the file is itself a jinja template):
 
-```yaml
----
-id: domain-scraping-law        # stable identifier consumers key on
-audience: scraping             # who the section is for (free-form)
-review_by: 2026-12-18          # next scheduled review
-sources:                       # the citations the section rests on
-  - https://...
----
+```jinja
+{# ethics: id=domain-scraping-law     # stable id: <tier>-<slug>, consumers key on it
+   version=2026-09-24.1                # YYYY-MM-DD.rev of last content change
+   status=active                       # draft | active | kind
+   triggers=["sitemap", "robots.txt"]  # presence-scan keywords
+   sources=["https://..."]             # primary citations the section rests on
+#}
 ```
+
+Freshness lives in the section body: the 制度変更ウォッチ heading carries
+one or more `(review_by: YYYY-MM-DD)` dates the validator checks.
 
 ## Contract
 
@@ -49,3 +51,26 @@ consumer's flag. A consumer maps each abstract condition to its own gating
 (this template's `REGISTRY.yml` maps `scraping` → `scraping_effective`,
 `oj_code` → `oj_code`, ...). The codex owns the *intent*; the consumer owns
 the *wiring*.
+
+## Validation
+
+`tools/validate.py` (stdlib + PyYAML, run via `uv run --with pyyaml`)
+enforces the corpus contract on every commit:
+
+```bash
+just check    # or: uv run --with pyyaml python tools/validate.py
+just drift    # report due/expired review_by + probe source URLs (exit 0)
+```
+
+Checks: every `sections/<tier>/<slug>.md.jinja` appears in MANIFEST and
+vice versa; the `{# ethics: ... #}` header carries `id` (must equal both the
+MANIFEST id and the `<tier>-<slug>` path name), `version`, `status`
+(`draft|active|kind`), non-empty `triggers`, and may carry `sources=[...]`;
+MANIFEST `when`/`placement` stay within the documented vocabulary; bodies
+stay flag-agnostic (no `{{`/`{%` after the header); every section keeps the
+required headings and at least one `(review_by: YYYY-MM-DD)` date in
+制度変更ウォッチ — expired dates are errors, due-within-30-days warnings.
+
+A weekly `drift-watch` workflow opens/updates a `codex-drift` issue when a
+review_by comes due or a declared source URL stops answering, and closes it
+when the report is clean.
