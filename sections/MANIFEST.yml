@@ -41,6 +41,14 @@ sections:
     file: baseline/pki-chain.md.jinja
     when: always
     placement: agents_md
+  - id: baseline-deprecated-crypto
+    file: baseline/deprecated-crypto.md.jinja
+    when: always
+    placement: agents_md
+  - id: baseline-vdp
+    file: baseline/vdp.md.jinja
+    when: always
+    placement: agents_md
   - id: baseline-pqc-fips
     file: baseline/pqc-fips.md.jinja
     when: always
