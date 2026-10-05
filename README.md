@@ -35,8 +35,14 @@ one or more `(review_by: YYYY-MM-DD)` dates the validator checks.
 - **Sources are load-bearing.** Every section's `why` names the real
   authority (statute, opinion, standard) it descends from.
 
-Consumer: [python-copier-template](https://github.com/ConstitutiveTemplates/python-copier-template)
-(vendors into `_shared/ethics/`; see its `docs/explanations/ethics-external.md`).
+Consumers:
+- [daimonion](https://github.com/ConstitutiveTemplates/daimonion) — the
+  consumer template; vendors this repo's sections into `_shared/ethics/`
+  pinned by `.ethics-vendored`, and opens a sync PR when drift is detected
+  (see its `docs/explanations/ethics-external.md`).
+- [law-map](https://github.com/ConstitutiveTemplates/law-map) — the
+  obligation graph; its obligations link sections here via
+  `related_sections` ids (`<tier>-<slug>`).
 
 ## Placement & conditions (MANIFEST.yml)
 
@@ -74,3 +80,19 @@ required headings and at least one `(review_by: YYYY-MM-DD)` date in
 A weekly `drift-watch` workflow opens/updates a `codex-drift` issue when a
 review_by comes due or a declared source URL stops answering, and closes it
 when the report is clean.
+
+## Contributing
+
+New sections and corrections to section prose or sources belong here, in
+good-future-codex — not in the consumer template. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for how to propose a section or fix a
+source. Obligation-level changes (which laws ground which behaviors) go
+through
+[law-map's Legal RFC issue template](https://github.com/ConstitutiveTemplates/law-map/issues/new?template=legal_rfc.yml);
+template/rendering problems go to
+[daimonion](https://github.com/ConstitutiveTemplates/daimonion).
+
+**Not legal advice.** Sections record what statutes, opinions, and standards
+say, with one-line summaries and links to the primary source; they do not
+interpret the law for a specific project or situation. For an actual
+compliance determination, consult a qualified practitioner.

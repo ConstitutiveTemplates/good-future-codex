@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: law-map Legal RFC
+    url: https://github.com/ConstitutiveTemplates/law-map/issues/new?template=legal_rfc.yml
+    about: Obligation-level changes (which laws ground which behaviors) are tracked in law-map, not here.
+  - name: daimonion issues
+    url: https://github.com/ConstitutiveTemplates/daimonion/issues/new/choose
+    about: Template wiring, rendering, or gating problems belong in daimonion (the consumer template), not here.
