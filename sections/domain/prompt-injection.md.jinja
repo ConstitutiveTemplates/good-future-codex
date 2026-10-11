@@ -61,8 +61,13 @@ AgentDojo(Debenedetti et al., 2024)は、現行 LLM が攻撃なしでも
 # 外部テキストは data 欄に隔離し、指示欄には入れない
 messages = [
     {"role": "system", "content": SYSTEM_PROMPT},
-    {"role": "user", "content": [{"type": "text", "text": user_request},
-                                 {"type": "data", "text": fetched_page}]},
+    {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": user_request},
+            {"type": "data", "text": fetched_page},
+        ],
+    },
 ]
 
 # 破壊的・送信系は承認なしに実行しない
