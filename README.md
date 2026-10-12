@@ -66,6 +66,7 @@ enforces the corpus contract on every commit:
 ```bash
 just check    # or: uv run --with pyyaml python tools/validate.py
 just drift    # report due/expired review_by + probe source URLs (exit 0)
+just sources  # probe only declared sources: URLs (exit 1 when any is flagged)
 ```
 
 Checks: every `sections/<tier>/<slug>.md.jinja` appears in MANIFEST and

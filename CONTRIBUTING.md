@@ -70,11 +70,14 @@ signal that the section needs a real re-check.
 ```bash
 just check    # or: uv run --with pyyaml python tools/validate.py
 just drift    # or: uv run --with pyyaml python tools/validate.py --drift
+just sources  # or: uv run --with pyyaml python tools/validate.py --sources
 ```
 
 `just check` exits non-zero on any error. `just drift` reports
-due/expired `review_by` dates and probes declared source URLs (curl HEAD);
-it always exits 0.
+due/expired `review_by` dates and probes declared source URLs (curl HEAD
+with GET fallback); it always exits 0. `just sources` probes only the
+declared `sources:` URLs (headers, body links, `lang/*.yml`) and exits 1
+when any URL is flagged, so CI or the weekly drift-watch can gate on it.
 
 ## What happens downstream
 

@@ -10,24 +10,25 @@ on:
     - cron: "0 7 * * 1" # Mondays 07:00 UTC (one hour after law-map's run)
   workflow_dispatch: {}
 
-permissions:
-  issues: write
-  contents: read
-
 jobs:
   drift:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
           enable-cache: true
       - name: Drift report
         run: |
-          uv run --with pyyaml python tools/validate.py --drift > drift.txt 2>&1 || true
+          uv run --with pyyaml python tools/validate.py --drift --sources > drift.txt 2>&1 || true
           cat drift.txt
           cat drift.txt >> "$GITHUB_STEP_SUMMARY"
-          if grep -Eq '\[drift\] (EXPIRED|due)|<-- FLAGGED' drift.txt; then
+          if grep -Eq '\[drift\] (EXPIRED|due)|<-- FLAGGED|source probes: [0-9]+ total, [1-9]' drift.txt; then
             echo "FOUND=1" >> "$GITHUB_ENV"
           fi
       - name: Open or update drift issue
