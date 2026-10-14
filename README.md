@@ -3,9 +3,7 @@
 The canonical legal & ethical sections of the **Good-future charter** —
 reviewed, versioned prose that consuming templates vendor into generated
 `AGENTS.md` files. *kanon*: κανών, the measuring rod — the origin of
-*canon*. Formerly `good-future-codex`.
-
-This repo owns *content only*: no template flags, no
+*canon*. This repo owns *content only*: no template flags, no
 gating logic, no enforcement. Consumers decide which sections apply.
 
 ## Layout
@@ -39,15 +37,15 @@ one or more `(review_by: YYYY-MM-DD)` dates the validator checks.
   authority (statute, opinion, standard) it descends from.
 
 Consumers:
-- [architekton-py](https://github.com/ConstitutiveTemplates/architekton-py) — the
-  consumer template (formerly `daimonion`); vendors this repo's sections
+- [architekton-py](https://github.com/politeuma/architekton-py) — the
+  consumer template; vendors this repo's sections
   into `_shared/ethics/` pinned by `.ethics-vendored`, and opens a sync PR
   when drift is detected (see its `docs/explanations/ethics-external.md`).
-- [law-map](https://github.com/ConstitutiveTemplates/law-map) — the
+- [law-map](https://github.com/politeuma/law-map) — the
   obligation graph; its obligations link sections here via
   `related_sections` ids (`<tier>-<slug>`).
-- [daimonion](https://github.com/ConstitutiveTemplates/daimonion) — the
-  ethics linter (formerly `law-lint`); bundles this repo's snapshot inside
+- [daimonion](https://github.com/politeuma/daimonion) — the
+  ethics linter; bundles this repo's snapshot inside
   its wheel and renders the matching sections into any project's
   `AGENTS.md`, whatever template it came from.
 
@@ -96,9 +94,9 @@ kanon — not in the consumer template. See
 [CONTRIBUTING.md](CONTRIBUTING.md) for how to propose a section or fix a
 source. Obligation-level changes (which laws ground which behaviors) go
 through
-[law-map's Legal RFC issue template](https://github.com/ConstitutiveTemplates/law-map/issues/new?template=legal_rfc.yml);
+[law-map's Legal RFC issue template](https://github.com/politeuma/law-map/issues/new?template=legal_rfc.yml);
 template/rendering problems go to
-[architekton-py](https://github.com/ConstitutiveTemplates/architekton-py).
+[architekton-py](https://github.com/politeuma/architekton-py).
 
 **Not legal advice.** Sections record what statutes, opinions, and standards
 say, with one-line summaries and links to the primary source; they do not

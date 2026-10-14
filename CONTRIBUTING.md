@@ -2,7 +2,7 @@
 
 This repo owns the *content layer* of the ethics/legal stack: reviewed,
 versioned prose sections that consumers vendor into generated projects. The
-consumer template (architekton-py, formerly daimonion) does **not** accept section changes — new
+consumer template (architekton-py) does **not** accept section changes — new
 sections and corrections to section prose or sources are proposed here.
 
 Issues and PRs in English are welcome. The sections themselves are written
