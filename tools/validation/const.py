@@ -39,9 +39,9 @@ PLACEMENT_VOCAB = {"agents_md", "charter", "legal_md", "standalone"}
 STATUS_VOCAB = {"draft", "active"}
 REQUIRED_HEADINGS = ("## 事実", "## 禁止パターン", "## 推奨設定", "## 運用チェック", "## 制度変更ウォッチ")
 
-# sections/<tier>/<slug>.md.jinja -- _template.md.jinja at the top level
+# sections/<tier>/<slug>.md -- _template.md at the top level
 # is an authoring aid, not a section, and is deliberately not matched.
-SECTION_GLOB = "*/*.md.jinja"
+SECTION_GLOB = "*/*.md"
 
 # --- Section header/body patterns -------------------------------------------
 ETHICS_HEADER_RE = re.compile(r"\{#\s*ethics:\s*(.*?)#\}", re.DOTALL)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validate the kanon sections corpus.
 
-Real section shape (sections/<tier>/<slug>.md.jinja):
+Real section shape (sections/<tier>/<slug>.md):
 
     {# ethics: id=<tier>-<slug> version=<YYYY-MM-DD.rev> status=<draft|active>
        triggers=["kw", ...] #}
@@ -12,11 +12,11 @@ Real section shape (sections/<tier>/<slug>.md.jinja):
 
 Checks (all errors are collected; exit 1 if any, else 0):
 
-  * every ``sections/<tier>/<slug>.md.jinja`` appears in MANIFEST
+  * every ``sections/<tier>/<slug>.md`` appears in MANIFEST
     ``sections[].file`` and vice versa
   * every file opens with an ``{# ethics: ... #}`` header carrying
       - id        equals the MANIFEST id AND ``<tier>-<slug>`` derived from
-                  the file path (``region/eu-cra.md.jinja`` -> ``region-eu-cra``)
+                  the file path (``region/eu-cra.md`` -> ``region-eu-cra``)
       - version   ``YYYY-MM-DD.rev``
       - status    draft | active
       - triggers  a non-empty string list

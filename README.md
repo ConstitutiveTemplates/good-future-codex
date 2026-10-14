@@ -9,10 +9,10 @@ gating logic, no enforcement. Consumers decide which sections apply.
 ## Layout
 
 ```
-sections/<tier>/<slug>.md.jinja   one file per section; header comment + prose body
+sections/<tier>/<slug>.md   one file per section; header comment + prose body
 ```
 
-Header (per section, a jinja comment — the file is itself a jinja template):
+Header (per section, a jinja-style comment):
 
 ```jinja
 {# ethics: id=domain-scraping-law     # stable id: <tier>-<slug>, consumers key on it
@@ -77,7 +77,7 @@ just drift    # report due/expired review_by + probe source URLs (exit 0)
 just sources  # probe only declared sources: URLs (exit 1 when any is flagged)
 ```
 
-Checks: every `sections/<tier>/<slug>.md.jinja` appears in MANIFEST and
+Checks: every `sections/<tier>/<slug>.md` appears in MANIFEST and
 vice versa; the `{# ethics: ... #}` header carries `id` (must equal both the
 MANIFEST id and the `<tier>-<slug>` path name), `version`, `status`
 (`draft|active`), non-empty `triggers`, and may carry `sources=[...]`;

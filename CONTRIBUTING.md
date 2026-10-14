@@ -12,12 +12,12 @@ in Japanese prose, as the existing ones are.
 
 Read these before proposing anything:
 
-- `sections/_template.md.jinja` — the authoring aid: header fields, section
+- `sections/_template.md` — the authoring aid: header fields, section
   structure, the fixed 制度変更ウォッチ block and the trailing not-legal-advice
   comment.
 - `sections/MANIFEST.yml` — the distribution contract: every section's
   `placement` and abstract `when` condition, from a documented vocabulary.
-- `sections/baseline/pki-chain.md.jinja` — a worked example (header, 要約,
+- `sections/baseline/pki-chain.md` — a worked example (header, 要約,
   bad/good pairs, review_by dates).
 - `tools/validate.py` — what actually gets checked (run it locally; see
   below).
@@ -34,9 +34,9 @@ checks — describe nothing beyond what the validator enforces.
 
 ## Proposing a new section
 
-1. Copy `sections/_template.md.jinja` into the matching tier directory —
+1. Copy `sections/_template.md` into the matching tier directory —
    `sections/baseline/`, `domain/`, `region/`, `sector/`, or `lang/` — as
-   `sections/<tier>/<slug>.md.jinja`.
+   `sections/<tier>/<slug>.md`.
 2. Fill the `{# ethics: ... #}` header: `id=<tier>-<slug>` (must match both
    the MANIFEST id and the path name), `version=YYYY-MM-DD.rev`,
    `status=draft` (new sections start as `draft`; promote to `active` only

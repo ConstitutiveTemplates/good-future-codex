@@ -33,7 +33,7 @@ pattern-match their own code against it.>
 
 <Copy-pasteable configuration or code sketch with versioned defaults.
 Show the bad shape next to the good one where it helps; keep snippets
-free of `{{ }}` / `{% %}` (the section is rendered as jinja).>
+free of `{{ }}` / `{% %}` (consumers may wrap the section in a template engine).>
 
 ## 運用チェック
 

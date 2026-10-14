@@ -45,8 +45,8 @@ def section_files() -> list[Path]:
 
 
 def expected_id(path: Path) -> str:
-    """region/eu-cra.md.jinja -> region-eu-cra (tier-slug naming rule)."""
-    return f"{path.parent.name}-{path.name.removesuffix('.md.jinja')}"
+    """region/eu-cra.md -> region-eu-cra (tier-slug naming rule)."""
+    return f"{path.parent.name}-{path.name.removesuffix('.md')}"
 
 
 def parse_header(path: Path) -> dict[str, str] | None:

@@ -73,7 +73,7 @@ def check_upstream_project_status(
     notes: list[str] = []
     if not law_map_dir.is_dir():
         return notes
-    sec_id = origin.replace(".md.jinja", "").replace("/", "-")
+    sec_id = origin.replace(".md", "").replace("/", "-")
     for path in sorted((law_map_dir / OBLIGATIONS_SUBDIR).rglob("*.yml")):
         if path.name.startswith("_"):
             continue

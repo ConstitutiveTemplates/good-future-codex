@@ -33,7 +33,7 @@ def _split_header_body(text: str) -> tuple[str, str]:
 
 
 def extract_section_urls(text: str) -> list[str]:
-    """URLs declared by one .md.jinja section: header sources + body links."""
+    """URLs declared by one .md section: header sources + body links."""
     head, body = _split_header_body(text)
     return [strip_url_punct(u) for u in URL_RE.findall(head) + URL_RE.findall(body)]
 
@@ -103,7 +103,7 @@ def collect_source_urls(sections_dir: Path = SECTIONS) -> dict[str, list[str]]:
     """Map relative file path -> sorted unique declared source URLs.
 
     Covers MANIFEST.yml rows (optional ``sources:``), every
-    ``sections/*/*.md.jinja`` (header ``sources=[...]`` + body links),
+    ``sections/*/*.md`` (header ``sources=[...]`` + body links),
     and sibling YAML data files (any ``sources:`` list, e.g.
     ``lang/copyright-terms.yml``). Reads files only; never touches
     the network.

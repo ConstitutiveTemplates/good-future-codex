@@ -35,74 +35,74 @@
 
 sections:
   - id: baseline-copyright-ai
-    file: baseline/copyright-ai.md.jinja
+    file: baseline/copyright-ai.md
     when: [cli, data_science]
     placement: agents_md
   - id: baseline-license-drift
-    file: baseline/license-drift.md.jinja
+    file: baseline/license-drift.md
     when: always
     placement: agents_md
   - id: baseline-personal-data
-    file: baseline/personal-data.md.jinja
+    file: baseline/personal-data.md
     when: [personal_data, face_recognition, medtech]
     placement: agents_md
   - id: baseline-pki-chain
-    file: baseline/pki-chain.md.jinja
+    file: baseline/pki-chain.md
     when: [embedded, cli, web_api]
     placement: agents_md
   - id: baseline-deprecated-crypto
-    file: baseline/deprecated-crypto.md.jinja
+    file: baseline/deprecated-crypto.md
     when: always
     placement: agents_md
   - id: baseline-vdp
-    file: baseline/vdp.md.jinja
+    file: baseline/vdp.md
     when: always
     placement: agents_md
   - id: baseline-pqc-fips
-    file: baseline/pqc-fips.md.jinja
+    file: baseline/pqc-fips.md
     when: [library, cli, web_api]
     placement: agents_md
   - id: domain-contest-rules
-    file: domain/contest-rules.md.jinja
+    file: domain/contest-rules.md
     when: oj_code
     placement: agents_md
   - id: domain-face-recognition
-    file: domain/face-recognition.md.jinja
+    file: domain/face-recognition.md
     when: face_recognition
     placement: agents_md
   - id: domain-llm-appsec
-    file: domain/llm-appsec.md.jinja
+    file: domain/llm-appsec.md
     when: mcp
     placement: agents_md
   - id: domain-prompt-injection
-    file: domain/prompt-injection.md.jinja
+    file: domain/prompt-injection.md
     when: mcp
     placement: agents_md
   - id: domain-ml-bias
-    file: domain/ml-bias.md.jinja
+    file: domain/ml-bias.md
     when: [data_science, kaggle]
     placement: agents_md
   - id: domain-scraping-law
-    file: domain/scraping-law.md.jinja
+    file: domain/scraping-law.md
     when: scraping
     placement: agents_md
   - id: region-eu-cra
-    file: region/eu-cra.md.jinja
+    file: region/eu-cra.md
     when: commercial
     placement: agents_md
   - id: region-eu-eaa
-    file: region/eu-eaa.md.jinja
+    file: region/eu-eaa.md
     when: eu_market
     placement: agents_md
   - id: region-jp-external-transmission
-    file: region/jp-external-transmission.md.jinja
+    file: region/jp-external-transmission.md
     when: jp
     placement: agents_md
   - id: region-kyushu-ntp
-    file: region/kyushu-ntp.md.jinja
+    file: region/kyushu-ntp.md
     when: jp
     placement: agents_md
   - id: sector-samd-regulatory
-    file: sector/samd-regulatory.md.jinja
+    file: sector/samd-regulatory.md
     when: medtech
     placement: agents_md

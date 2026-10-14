@@ -30,7 +30,7 @@ def sections_dir(tmp_path: Path) -> Path:
                 "sections": [
                     {
                         "id": "baseline-demo",
-                        "file": "baseline/demo.md.jinja",
+                        "file": "baseline/demo.md",
                         "when": "always",
                         "placement": "agents_md",
                         "sources": ["https://example.com/manifest"],
@@ -40,7 +40,7 @@ def sections_dir(tmp_path: Path) -> Path:
         ),
         encoding="utf-8",
     )
-    (root / "baseline" / "demo.md.jinja").write_text(
+    (root / "baseline" / "demo.md").write_text(
         "{# ethics: id=baseline-demo version=2026-10-01.1 status=active\n"
         '   triggers=["demo"]\n'
         '   sources=["https://example.com/header", "https://example.com/shared"] #}\n'
@@ -67,7 +67,7 @@ def sections_dir(tmp_path: Path) -> Path:
 def test_collect_covers_manifest_sections_and_yaml(sections_dir: Path) -> None:
     collected = v.collect_source_urls(sections_dir)
     assert collected["MANIFEST.yml"] == ["https://example.com/manifest"]
-    assert collected["baseline/demo.md.jinja"] == [
+    assert collected["baseline/demo.md"] == [
         "https://example.com/body",
         "https://example.com/header",
         "https://example.com/shared",
@@ -76,7 +76,7 @@ def test_collect_covers_manifest_sections_and_yaml(sections_dir: Path) -> None:
 
 
 def test_collect_dedups_shared_url_across_origins(sections_dir: Path) -> None:
-    (sections_dir / "baseline" / "other.md.jinja").write_text(
+    (sections_dir / "baseline" / "other.md").write_text(
         "{# ethics: id=baseline-other version=2026-10-01.1 status=draft\n"
         '   triggers=["x"] sources=["https://example.com/shared"] #}\n'
         "body https://example.com/shared\n",
@@ -214,7 +214,7 @@ def test_check_upstream_project_status_correlates_law_map(tmp_path: Path) -> Non
         encoding="utf-8",
     )
     notes = v.check_upstream_project_status(
-        "baseline/vdp.md.jinja",
+        "baseline/vdp.md",
         "https://example.com/cisa",
         law_map_dir=law_map_dir,
         open_law_dir=open_law_dir,

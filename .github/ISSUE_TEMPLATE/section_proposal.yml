@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thanks for proposing a section. Sections live in
-        `sections/<tier>/<slug>.md.jinja`, start as `status=draft`, and must
+        `sections/<tier>/<slug>.md`, start as `status=draft`, and must
         pass `just check` (`tools/validate.py`): header id matches the
         MANIFEST row and the `<tier>-<slug>` path name, body is
         flag-agnostic, and 制度変更ウォッチ carries at least one
