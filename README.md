@@ -70,8 +70,9 @@ with no obligations. kanon runs no scheduled freshness job of its own;
 - **Consumer-agnostic.** Section bodies never reference a consumer's
   files, flags or variable names (`scraping_effective`, `REGISTRY.yml`,
   ...); the validator rejects them. Gating lives in the consumer.
-- **Reviewed, not live.** Consumers vendor a pinned SHA; a sync workflow
-  diffs upstream and opens a PR. Nothing fetches this repo at render time.
+- **Reviewed, not live.** Consumers vendor a pinned release tag or SHA; a
+  sync workflow diffs upstream and opens a PR. Nothing fetches this repo at
+  render time.
 - **Sources are load-bearing.** Every section's `sources:` name the real
   authority (statute, opinion, standard) it descends from.
 
@@ -152,6 +153,16 @@ flag names, `配布:` / `Triggers:` lines that belong in front matter,
 retired project names). Every section keeps the required headings;
 present `review_by` dates must not be expired (due within 30 days warns).
 MANIFEST and the generated vocabulary tables must match `tools/manifest.py`.
+
+## Versioning
+
+Releases use date-based versions, `YYYY.MM.N` — `2026.10.0`, `2026.10.1`,
+then `2026.11.0` in the next month (the counter restarts each month). Each
+release is a git tag of that name plus a GitHub release whose notes are its
+[CHANGELOG.md](CHANGELOG.md) entry; breaking format changes are called out
+there. Each section additionally carries its own
+`version: "YYYY-MM-DD.rev"`, bumped on every content change, so a consumer
+can tell which sections a release touched.
 
 ## Contributing
 
