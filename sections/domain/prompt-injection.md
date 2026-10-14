@@ -118,3 +118,5 @@ execute(action)
 
 <!-- 法域・業法に触れる節は下の定型免責を残す。法的助言ではない。
      専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section domain-prompt-injection, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

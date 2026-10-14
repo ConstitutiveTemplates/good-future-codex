@@ -41,6 +41,13 @@ VERSION_RE = re.compile(r"\d{4}-\d{2}-\d{2}\.\d+")
 OBLIGATION_ID_RE = re.compile(r"obligation\.[a-z0-9-]+\.[a-z0-9-]+")
 # Section prose is CC BY 4.0 (sections/LICENSE); code stays Apache-2.0.
 SECTION_LICENSE = "CC-BY-4.0"
+SECTION_LICENSE_HEAD = "Attribution 4.0 International"
+# Per-section attribution note: the last line of every body, so the credit
+# and license link travel with the prose when a consumer pastes it.
+LICENSE_NOTE = (
+    "<!-- © kanon contributors (https://github.com/politeuma/kanon). "
+    "Section {id}, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->"
+)
 
 # --- Section body patterns --------------------------------------------------
 REVIEW_BY_RE = re.compile(r"review_by:\s*(\d{4}-\d{2}-\d{2})")

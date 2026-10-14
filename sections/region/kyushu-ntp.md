@@ -94,3 +94,5 @@ TP-Link中継器の月715MBは実測例の一部で、複数メーカの実機�
 - 影響TODO: 自プロジェクトのNTP設定に福岡大IP・ホスト名が残っていないか棚卸し。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section region-kyushu-ntp, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

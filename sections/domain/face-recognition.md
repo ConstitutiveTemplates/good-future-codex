@@ -118,3 +118,5 @@ for group, rows in eval_rows.groupby("demographic_group"):
   しきい値変更の根拠を記録する。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section domain-face-recognition, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

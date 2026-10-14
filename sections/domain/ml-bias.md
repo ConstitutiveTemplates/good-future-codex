@@ -102,3 +102,5 @@ write_model_card(subgroup_metrics, intervals)  # リリース物に同梱する
   組み込む。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section domain-ml-bias, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

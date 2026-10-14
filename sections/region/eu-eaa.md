@@ -91,3 +91,5 @@ EU域内で提供されるECサイト、電子書籍、銀行サービス等の�
   組み込み、既存画面の違反を棚卸しする。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section region-eu-eaa, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

@@ -115,3 +115,5 @@ def contest_allows_ai(judge: str, rules_url: str, ai_allowed: bool | None) -> bo
   食い違っていないかを見直す。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section domain-contest-rules, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

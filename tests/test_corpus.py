@@ -145,3 +145,14 @@ def test_template_front_matter_has_every_key() -> None:
     assert set(data) == set(v.FRONT_MATTER_KEYS)
     v.check_banned_phrases(REPO / "sections" / "_template.md", body, "template")
     assert v.errors == []
+
+
+def test_license_note_required() -> None:
+    v.check_license_note(SAMPLE, "# t\n\nbody\n", "baseline-pki-chain")
+    assert v.errors
+    v.reset()
+    body = SAMPLE.read_text(encoding="utf-8")
+    v.check_license_note(SAMPLE, body, "baseline-pki-chain")
+    assert v.errors == []
+    v.check_license_note(SAMPLE, body, "baseline-other")
+    assert v.errors

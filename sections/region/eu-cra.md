@@ -114,3 +114,5 @@ EU のサイバーレジリエンス規則(Cyber Resilience Act、規則 (EU) 20
   生成タスクとサポート期間の明示を実際に足す。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section region-eu-cra, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

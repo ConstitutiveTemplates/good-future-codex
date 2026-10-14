@@ -107,3 +107,5 @@ ssl_version = TLSv1.2  # 可能なら TLSv1.3
   (TLS 1.2+ / RSA-2048+)に固定し、CI で退行を検出する。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section baseline-deprecated-crypto, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

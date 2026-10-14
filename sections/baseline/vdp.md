@@ -108,3 +108,5 @@ EU CRA(規則 (EU) 2024/2847)第14条は製造者に協調的脆弱性開示ポ�
   自プロジェクトの運用に組み込む。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section baseline-vdp, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

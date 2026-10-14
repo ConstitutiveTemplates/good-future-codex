@@ -109,3 +109,5 @@ if longest_common_ngram(answer, source, n=12):
   拒否措置の現状を再確認する。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section baseline-copyright-ai, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

@@ -102,3 +102,5 @@ pin_set = {"sha256/現行の鍵", "sha256/バックアップ鍵"}  # 手順と�
   チェーン変更告知を監視対象に追加する。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section baseline-pki-chain, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

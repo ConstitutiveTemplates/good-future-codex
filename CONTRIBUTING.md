@@ -34,7 +34,8 @@ missing keys); an `id` that differs from the `<tier>-<slug>` path name; a
 regex that does not compile; obligation ids not shaped
 `obligation.<category>.<slug>`; empty `sources`; a `license` other than
 `CC-BY-4.0`; an `en` block without a title or with empty `summary` /
-`prohibited`; template expressions (`{{`/`{%`) in the body; banned phrases
+`prohibited`; a body that does not end with the attribution note for its
+own id; template expressions (`{{`/`{%`) in the body; banned phrases
 in the body or `en` block (consumer file/flag names such as `REGISTRY.yml`
 or `*_effective`, `配布:` / `Triggers:` lines, retired project names); a
 missing or out-of-order required heading; an expired `(review_by:
@@ -100,6 +101,8 @@ projects can answer the question, otherwise into an extension pack.
    warn.
 6. Leave the trailing not-legal-advice comment in place if the section
    touches 法域・業法 (the template's comment marks this).
+7. End the body with the CC BY 4.0 attribution note from the template,
+   with the section's own id.
 
 ## Correcting a source or a fact
 

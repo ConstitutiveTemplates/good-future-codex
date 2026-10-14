@@ -94,3 +94,5 @@ en:
   実装の差分をなくす。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section region-jp-external-transmission, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

@@ -129,3 +129,5 @@ async def log_request_good(request, user_id):
   スクラブの有無を記入する。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section baseline-personal-data, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

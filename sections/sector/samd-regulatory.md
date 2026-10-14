@@ -112,3 +112,5 @@ if not pccp_allows(eval_on_locked_suite(candidate_model)):
   該当性を専門家(薬事コンサル等)に照会する(本節は判断の代行ではない)。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section sector-samd-regulatory, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

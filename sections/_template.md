@@ -66,3 +66,6 @@ Config/code trigger regexes go in the front matter `triggers`, not here.>
 
 <!-- 法域・業法に触れる節は下の定型免責を残す。法的助言ではない。
      専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- Keep the license note below as the last line; the id must match the front matter. -->
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section <tier>-<slug>, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

@@ -95,3 +95,5 @@ LLM09 誤情報(Misinformation)、LLM10 無制限消費、である。番号は�
   再マッピングできるよう、参照は名称ベースで書く。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section domain-llm-appsec, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

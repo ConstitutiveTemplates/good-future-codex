@@ -13,6 +13,8 @@ from .const import (
     EN_KEYS,
     FRONT_MATTER_KEYS,
     JINJA_RE,
+    LICENSE_FILE,
+    LICENSE_NOTE,
     OBLIGATION_ID_RE,
     REPO,
     REQUIRED_HEADINGS,
@@ -20,6 +22,7 @@ from .const import (
     REVIEW_HORIZON,
     SECTION_GLOB,
     SECTION_LICENSE,
+    SECTION_LICENSE_HEAD,
     SECTION_SUFFIX,
     SECTIONS,
     TRIGGER_KEYS,
@@ -200,6 +203,17 @@ def check_banned_phrases(path: Path, text: str, where: str) -> None:
             error(f"{path}: {where} contains {match.group(0)!r} ({reason})")
 
 
+def check_license_note(path: Path, body: str, sid: object) -> None:
+    note = LICENSE_NOTE.format(id=sid)
+    if body.rstrip("\n").splitlines()[-1:] != [note]:
+        error(f"{path}: body must end with the CC BY 4.0 attribution note: {note}")
+
+
+def check_license_file(path: Path = LICENSE_FILE) -> None:
+    if not path.is_file() or not path.read_text(encoding="utf-8").startswith(SECTION_LICENSE_HEAD):
+        error(f"{path}: missing CC BY 4.0 legal code for the section prose")
+
+
 def _en_text(front: dict) -> str:
     en = front.get("en")
     if not isinstance(en, dict):
@@ -232,6 +246,7 @@ def _validate_section_file(path: Path, vocab: dict, seen_ids: set[str], *, drift
     check_banned_phrases(path, body, "body")
     check_banned_phrases(path, _en_text(front), "en block")
     check_headings(path, body)
+    check_license_note(path, body, sid)
     check_review_by(path, body, drift_mode=drift_mode, required=not front.get("obligations"))
 
 
@@ -273,6 +288,7 @@ def validate_corpus(*, drift_mode: bool = False) -> list[Path]:
     vocab = load_vocabulary()
     for dupe in duplicate_conditions(vocab):
         error(f"VOCABULARY.yml: condition {dupe!r} appears in more than one group")
+    check_license_file()
     files = section_files()
     validate_section_files(files, vocab, drift_mode=drift_mode)
     check_law_map_links(files, obligation_sections())

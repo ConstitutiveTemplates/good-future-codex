@@ -105,3 +105,5 @@ group = X25519MLKEM768                  # TLS のハイブリッド群(OpenSSL 3
   確認し、pinを外して追従できる状態にしておく。
 
 <!-- 法的助言ではない。専門家レビュー必須。 / This is not legal advice; expert review required. -->
+
+<!-- © kanon contributors (https://github.com/politeuma/kanon). Section baseline-pqc-fips, licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ -->

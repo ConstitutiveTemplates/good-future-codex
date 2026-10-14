@@ -168,3 +168,16 @@ template/rendering problems go to
 say, with one-line summaries and links to the primary source; they do not
 interpret the law for a specific project or situation. For an actual
 compliance determination, consult a qualified practitioner.
+
+## License
+
+- **Section prose** — everything under `sections/` (the `.md` sections,
+  their front matter, `VOCABULARY.yml`, the generated `MANIFEST.yml` and
+  `lang/*.yml`) — is licensed
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); the legal code
+  is in [`sections/LICENSE`](sections/LICENSE). Each section ends with a
+  one-line attribution note (an HTML comment naming the section id and the
+  license); keep it when you paste a section into an `AGENTS.md` or
+  elsewhere, and say if you changed the text.
+- **Code** — `tools/`, `tests/` and the CI configuration — stays
+  [Apache-2.0](LICENSE).
