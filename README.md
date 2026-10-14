@@ -1,8 +1,11 @@
-# good-future-codex
+# kanon
 
 The canonical legal & ethical sections of the **Good-future charter** —
 reviewed, versioned prose that consuming templates vendor into generated
-`AGENTS.md` files. This repo owns *content only*: no template flags, no
+`AGENTS.md` files. *kanon*: κανών, the measuring rod — the origin of
+*canon*. Formerly `good-future-codex`.
+
+This repo owns *content only*: no template flags, no
 gating logic, no enforcement. Consumers decide which sections apply.
 
 ## Layout
@@ -36,13 +39,17 @@ one or more `(review_by: YYYY-MM-DD)` dates the validator checks.
   authority (statute, opinion, standard) it descends from.
 
 Consumers:
-- [daimonion](https://github.com/ConstitutiveTemplates/daimonion) — the
-  consumer template; vendors this repo's sections into `_shared/ethics/`
-  pinned by `.ethics-vendored`, and opens a sync PR when drift is detected
-  (see its `docs/explanations/ethics-external.md`).
+- [architekton-py](https://github.com/ConstitutiveTemplates/architekton-py) — the
+  consumer template (formerly `daimonion`); vendors this repo's sections
+  into `_shared/ethics/` pinned by `.ethics-vendored`, and opens a sync PR
+  when drift is detected (see its `docs/explanations/ethics-external.md`).
 - [law-map](https://github.com/ConstitutiveTemplates/law-map) — the
   obligation graph; its obligations link sections here via
   `related_sections` ids (`<tier>-<slug>`).
+- [daimonion](https://github.com/ConstitutiveTemplates/daimonion) — the
+  ethics linter (formerly `law-lint`); bundles this repo's snapshot inside
+  its wheel and renders the matching sections into any project's
+  `AGENTS.md`, whatever template it came from.
 
 ## Placement & conditions (MANIFEST.yml)
 
@@ -78,20 +85,20 @@ stay flag-agnostic (no `{{`/`{%` after the header); every section keeps the
 required headings and at least one `(review_by: YYYY-MM-DD)` date in
 制度変更ウォッチ — expired dates are errors, due-within-30-days warnings.
 
-A weekly `drift-watch` workflow opens/updates a `codex-drift` issue when a
+A weekly `drift-watch` workflow opens/updates a `kanon-drift` issue when a
 review_by comes due or a declared source URL stops answering, and closes it
 when the report is clean.
 
 ## Contributing
 
 New sections and corrections to section prose or sources belong here, in
-good-future-codex — not in the consumer template. See
+kanon — not in the consumer template. See
 [CONTRIBUTING.md](CONTRIBUTING.md) for how to propose a section or fix a
 source. Obligation-level changes (which laws ground which behaviors) go
 through
 [law-map's Legal RFC issue template](https://github.com/ConstitutiveTemplates/law-map/issues/new?template=legal_rfc.yml);
 template/rendering problems go to
-[daimonion](https://github.com/ConstitutiveTemplates/daimonion).
+[architekton-py](https://github.com/ConstitutiveTemplates/architekton-py).
 
 **Not legal advice.** Sections record what statutes, opinions, and standards
 say, with one-line summaries and links to the primary source; they do not

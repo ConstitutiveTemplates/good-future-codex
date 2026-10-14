@@ -1,5 +1,5 @@
 name: Section proposal
-description: Propose a new ethics/legal prose section for the good-future-codex corpus.
+description: Propose a new ethics/legal prose section for the kanon corpus.
 title: "[section] <tier>-<slug>: <one-line summary>"
 labels: ["section"]
 body:

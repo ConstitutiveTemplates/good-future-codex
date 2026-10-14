@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the good-future-codex sections corpus.
+"""Validate the kanon sections corpus.
 
 Real section shape (sections/<tier>/<slug>.md.jinja):
 

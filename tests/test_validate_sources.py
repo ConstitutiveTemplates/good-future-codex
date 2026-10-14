@@ -117,7 +117,7 @@ def test_parse_curl_status_uses_final_response() -> None:
 def test_curl_args_are_polite() -> None:
     args = v.curl_args("https://example.com/", True, 10.0, 2)
     assert "-I" in args
-    assert args[args.index("-A") + 1].startswith("good-future-codex-check/")
+    assert args[args.index("-A") + 1].startswith("kanon-check/")
     assert args[args.index("--retry") + 1] == "2"
     assert args[args.index("--max-time") + 1] == "10"
     get_args = v.curl_args("https://example.com/", False, 10.0, 2)

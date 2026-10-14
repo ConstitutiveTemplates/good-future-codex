@@ -52,8 +52,8 @@ REVIEW_HORIZON = dt.timedelta(days=30)
 SOURCE_TIMEOUT = 10.0
 SOURCE_RETRIES = 2
 SOURCE_USER_AGENT = (
-    "good-future-codex-check/1.0"
-    " (+https://github.com/ConstitutiveTemplates/good-future-codex)"
+    "kanon-check/1.0"
+    " (+https://github.com/ConstitutiveTemplates/kanon)"
 )
 CURL_STATUS_RE = re.compile(r"^http/\S+\s+(\d{3})\b", re.IGNORECASE)
 

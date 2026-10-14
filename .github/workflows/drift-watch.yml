@@ -2,7 +2,7 @@ name: drift-watch
 
 # Weekly review-freshness scan: section review_by dates that are due/expired
 # and in-body source URLs that fail HEAD probes. Opens or updates ONE issue
-# labeled codex-drift so the inbox does not flood; closes it when a run is
+# labeled kanon-drift so the inbox does not flood; closes it when a run is
 # clean.
 
 on:
@@ -35,7 +35,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          label="codex-drift"
+          label="kanon-drift"
           gh label create "$label" --color E11D48 --description "Section review_by expired/due or dead source URL" --force || true
           body=$(cat drift.txt)
           issue=$(gh issue list --state open --label "$label" --json number --jq '.[0].number // empty' | head -1)

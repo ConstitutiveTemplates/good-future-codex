@@ -1,5 +1,5 @@
 name: Source correction
-description: Correct a wrong or dead claim, source, or URL in an existing good-future-codex section.
+description: Correct a wrong or dead claim, source, or URL in an existing kanon section.
 title: "[correction] <tier>-<slug>: <what is wrong>"
 labels: ["correction"]
 body:

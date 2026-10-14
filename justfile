@@ -1,4 +1,4 @@
-# good-future-codex development tasks
+# kanon development tasks
 
 check:
     uv run --with pyyaml python tools/validate.py
