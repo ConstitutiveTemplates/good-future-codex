@@ -18,6 +18,12 @@ MANIFEST = SECTIONS / "MANIFEST.yml"
 # --- Manifest vocabularies --------------------------------------------------
 WHEN_VOCAB = {
     "always",
+    "library",
+    "cli",
+    "embedded",
+    "personal_data",
+    "face_recognition",
+    "medtech",
     "scraping",
     "oj_code",
     "mcp",

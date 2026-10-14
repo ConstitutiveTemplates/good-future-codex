@@ -6,13 +6,21 @@
 # REGISTRY.yml maps `scraping` -> `scraping_effective`, `oj_code` -> `oj_code`).
 # The codex owns the intent; the consumer owns the wiring.
 #
-# `when` vocabulary (abstract, consumer-agnostic):
+# `when` vocabulary (abstract, consumer-agnostic). A string means the one
+# condition; a list means "any of these" (the section applies when at least
+# one holds).
 #   always            every project that ships the appendix
+#   library           a library / API package project
+#   cli               a command-line / terminal tool project
+#   embedded          an embedded / microcontroller project
 #   scraping          the project fetches the web (any engine)
 #   oj_code           a code-submission judge workspace
 #   mcp               an MCP server is generated
 #   data_science      a data-science / kaggle layout
 #   web_api           an HTTP API project
+#   personal_data     the project processes personal data
+#   face_recognition  the project does biometric identification
+#   medtech           the project is medical / SaMD software
 #   commercial        the distribution answer is commercial
 #   eu_market         the project ships to the EU market
 #   jp                the project operates under Japanese law
@@ -27,7 +35,7 @@
 sections:
   - id: baseline-copyright-ai
     file: baseline/copyright-ai.md.jinja
-    when: ai_assisted
+    when: [cli, data_science]
     placement: agents_md
   - id: baseline-license-drift
     file: baseline/license-drift.md.jinja
@@ -35,11 +43,11 @@ sections:
     placement: agents_md
   - id: baseline-personal-data
     file: baseline/personal-data.md.jinja
-    when: data_science
+    when: [personal_data, face_recognition, medtech]
     placement: agents_md
   - id: baseline-pki-chain
     file: baseline/pki-chain.md.jinja
-    when: always
+    when: [embedded, cli, web_api]
     placement: agents_md
   - id: baseline-deprecated-crypto
     file: baseline/deprecated-crypto.md.jinja
@@ -51,7 +59,7 @@ sections:
     placement: agents_md
   - id: baseline-pqc-fips
     file: baseline/pqc-fips.md.jinja
-    when: always
+    when: [library, cli, web_api]
     placement: agents_md
   - id: domain-contest-rules
     file: domain/contest-rules.md.jinja
@@ -59,7 +67,7 @@ sections:
     placement: agents_md
   - id: domain-face-recognition
     file: domain/face-recognition.md.jinja
-    when: data_science
+    when: face_recognition
     placement: agents_md
   - id: domain-llm-appsec
     file: domain/llm-appsec.md.jinja
@@ -79,7 +87,7 @@ sections:
     placement: agents_md
   - id: region-eu-cra
     file: region/eu-cra.md.jinja
-    when: eu_market
+    when: commercial
     placement: agents_md
   - id: region-eu-eaa
     file: region/eu-eaa.md.jinja
@@ -95,5 +103,5 @@ sections:
     placement: agents_md
   - id: sector-samd-regulatory
     file: sector/samd-regulatory.md.jinja
-    when: always
+    when: medtech
     placement: agents_md

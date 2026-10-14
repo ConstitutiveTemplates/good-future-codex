@@ -53,11 +53,14 @@ Consumers:
 
 `sections/MANIFEST.yml` is the distribution contract: every section declares
 **where** it wants to land (`placement`: `agents_md` / `charter` /
-`legal_md` / `standalone`) and **under what abstract condition** (`when`:
-`always` / `scraping` / `oj_code` / `mcp` / `data_science` / `web_api` /
-`commercial` / `eu_market` / `jp` / `ai_assisted`).
+`legal_md` / `standalone`) and **under what abstract condition** (`when`, a
+condition name or list: `always` / `library` / `cli` / `embedded` /
+`scraping` / `oj_code` / `mcp` / `data_science` / `web_api` / `personal_data` /
+`face_recognition` / `medtech` / `commercial` / `eu_market` / `jp` /
+`ai_assisted`).
 
-The `when` vocabulary is deliberately abstract — the codex never names a
+The `when` may be a single condition or a list ("any of these"). The
+vocabulary is deliberately abstract — the codex never names a
 consumer's flag. A consumer maps each abstract condition to its own gating
 (this template's `REGISTRY.yml` maps `scraping` → `scraping_effective`,
 `oj_code` → `oj_code`, ...). The codex owns the *intent*; the consumer owns

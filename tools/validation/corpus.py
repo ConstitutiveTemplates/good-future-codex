@@ -148,8 +148,10 @@ def _validate_manifest_rows(manifest_rows: list) -> dict[str, dict]:
             error(f"MANIFEST.yml: duplicate section id {sid!r}")
         seen_ids.add(sid)
         when = row.get("when")
-        if when not in WHEN_VOCAB:
-            error(f"MANIFEST.yml: section {sid!r}: when {when!r} not in {sorted(WHEN_VOCAB)}")
+        when_items = when if isinstance(when, list) else [when]
+        bad = [w for w in when_items if w not in WHEN_VOCAB]
+        if bad:
+            error(f"MANIFEST.yml: section {sid!r}: when {bad!r} not in {sorted(WHEN_VOCAB)}")
         placement = row.get("placement")
         if placement not in PLACEMENT_VOCAB:
             error(f"MANIFEST.yml: section {sid!r}: placement {placement!r} not in {sorted(PLACEMENT_VOCAB)}")
