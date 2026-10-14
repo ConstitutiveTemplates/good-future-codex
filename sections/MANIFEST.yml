@@ -1,10 +1,10 @@
-# Placement & distribution contract for the codex sections.
+# Placement & distribution contract for the kanon sections.
 #
 # Each section declares WHERE it wants to land and UNDER WHAT ABSTRACT
-# CONDITION -- in the codex's own vocabulary, never a consumer's flag name.
+# CONDITION -- in kanon's own vocabulary, never a consumer's flag name.
 # A consumer maps each abstract `when` to its own gating (e.g. this template's
 # REGISTRY.yml maps `scraping` -> `scraping_effective`, `oj_code` -> `oj_code`).
-# The codex owns the intent; the consumer owns the wiring.
+# kanon owns the intent; the consumer owns the wiring.
 #
 # `when` vocabulary (abstract, consumer-agnostic). A string means the one
 # condition; a list means "any of these" (the section applies when at least

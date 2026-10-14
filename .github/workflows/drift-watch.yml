@@ -41,9 +41,9 @@ jobs:
           issue=$(gh issue list --state open --label "$label" --json number --jq '.[0].number // empty' | head -1)
           if [ "${FOUND:-}" = "1" ]; then
             if [ -n "$issue" ]; then
-              gh issue edit "$issue" --title "Codex drift report $(date -u +%Y-%m-%d)" --body "$body"
+              gh issue edit "$issue" --title "kanon drift report $(date -u +%Y-%m-%d)" --body "$body"
             else
-              gh issue create --title "Codex drift report $(date -u +%Y-%m-%d)" --label "$label" --body "$body"
+              gh issue create --title "kanon drift report $(date -u +%Y-%m-%d)" --label "$label" --body "$body"
             fi
           elif [ -n "$issue" ]; then
             gh issue close "$issue" --comment "drift resolved"
