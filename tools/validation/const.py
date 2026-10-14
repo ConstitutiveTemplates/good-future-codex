@@ -36,7 +36,7 @@ WHEN_VOCAB = {
     "ai_assisted",
 }
 PLACEMENT_VOCAB = {"agents_md", "charter", "legal_md", "standalone"}
-STATUS_VOCAB = {"draft", "active", "kind"}
+STATUS_VOCAB = {"draft", "active"}
 REQUIRED_HEADINGS = ("## 事実", "## 禁止パターン", "## 推奨設定", "## 運用チェック", "## 制度変更ウォッチ")
 
 # sections/<tier>/<slug>.md.jinja -- _template.md.jinja at the top level

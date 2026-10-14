@@ -17,7 +17,7 @@ Header (per section, a jinja comment — the file is itself a jinja template):
 ```jinja
 {# ethics: id=domain-scraping-law     # stable id: <tier>-<slug>, consumers key on it
    version=2026-09-24.1                # YYYY-MM-DD.rev of last content change
-   status=active                       # draft | active | kind
+   status=active                       # draft | active
    triggers=["sitemap", "robots.txt"]  # presence-scan keywords
    sources=["https://..."]             # primary citations the section rests on
 #}
@@ -60,10 +60,10 @@ condition name or list: `always` / `library` / `cli` / `embedded` /
 `ai_assisted`).
 
 The `when` may be a single condition or a list ("any of these"). The
-vocabulary is deliberately abstract — the codex never names a
+vocabulary is deliberately abstract — kanon never names a
 consumer's flag. A consumer maps each abstract condition to its own gating
 (this template's `REGISTRY.yml` maps `scraping` → `scraping_effective`,
-`oj_code` → `oj_code`, ...). The codex owns the *intent*; the consumer owns
+`oj_code` → `oj_code`, ...). kanon owns the *intent*; the consumer owns
 the *wiring*.
 
 ## Validation
@@ -80,7 +80,7 @@ just sources  # probe only declared sources: URLs (exit 1 when any is flagged)
 Checks: every `sections/<tier>/<slug>.md.jinja` appears in MANIFEST and
 vice versa; the `{# ethics: ... #}` header carries `id` (must equal both the
 MANIFEST id and the `<tier>-<slug>` path name), `version`, `status`
-(`draft|active|kind`), non-empty `triggers`, and may carry `sources=[...]`;
+(`draft|active`), non-empty `triggers`, and may carry `sources=[...]`;
 MANIFEST `when`/`placement` stay within the documented vocabulary; bodies
 stay flag-agnostic (no `{{`/`{%` after the header); every section keeps the
 required headings and at least one `(review_by: YYYY-MM-DD)` date in

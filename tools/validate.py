@@ -3,7 +3,7 @@
 
 Real section shape (sections/<tier>/<slug>.md.jinja):
 
-    {# ethics: id=<tier>-<slug> version=<YYYY-MM-DD.rev> status=<draft|active|kind>
+    {# ethics: id=<tier>-<slug> version=<YYYY-MM-DD.rev> status=<draft|active>
        triggers=["kw", ...] #}
     # <title>
     > **適用条件**: ...
@@ -18,7 +18,7 @@ Checks (all errors are collected; exit 1 if any, else 0):
       - id        equals the MANIFEST id AND ``<tier>-<slug>`` derived from
                   the file path (``region/eu-cra.md.jinja`` -> ``region-eu-cra``)
       - version   ``YYYY-MM-DD.rev``
-      - status    draft | active | kind
+      - status    draft | active
       - triggers  a non-empty string list
   * MANIFEST ``when`` / ``placement`` values stay in the documented vocabulary
   * section bodies are flag-agnostic: no ``{{`` / ``{%`` jinja expressions

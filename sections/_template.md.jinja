@@ -5,7 +5,7 @@
    agreement (tests/test_ethics_registry.py checks both directions; a
    promoted section is included only from the parents its row names in
    `rendered_from`). #}
-{# ethics: id=<registry-id> version=<YYYY-MM-DD.rev> status=<draft|active|kind> #}
+{# ethics: id=<registry-id> version=<YYYY-MM-DD.rev> status=<draft|active> #}
 # <Section title> — <one-line scope>
 
 > **適用条件**: <who must read this, in one paragraph. LLM entry: the first
@@ -18,7 +18,10 @@
 ## 事実
 
 <What happened, with numbers. Cite the primary source inline; do not copy
-statutes or articles verbatim — one-line summary plus link.>
+statutes or articles verbatim — one-line summary plus link.
+法改正は「改正年」と「施行日」を分けて書く: 改正年は改正法の成立(公布)年、
+施行日はその規定が効力を持つ日。例: 「2020年改正(2022-04-01施行)」。
+施行日だけを改正年として書かない(誤:「2022年改正」)。>
 
 ## 禁止パターン
 
@@ -38,7 +41,8 @@ free of `{{ }}` / `{% %}` (the section is rendered as jinja).>
 
 ## 制度変更ウォッチ
 
-- 変更予告: <one line + source + 確度: 報道/審議中/法案/施行済>
+- 変更予告: <one line + source + 確度: 報道/審議中/法案/施行済
+  (最終確認: YYYY-MM-DD)>
 - 確認TODO: 一次ソースで○○を確認 (review_by: YYYY-MM-DD)
 - 影響TODO: <cost / contract / procedure deltas>
 
