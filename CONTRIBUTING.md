@@ -122,7 +122,9 @@ just sources  # or: uv run --with pyyaml python tools/validate.py --sources
 due/expired `review_by` dates and probes declared source URLs (curl HEAD
 with GET fallback); it always exits 0. `just sources` probes only the
 declared `sources:` URLs (front matter, body links, `lang/*.yml`) and exits 1
-when any URL is flagged, so CI or the weekly drift-watch can gate on it.
+when any URL is flagged. These are author tools: there is no scheduled
+freshness job here — law-map's weekly drift-watch owns review dates and
+source liveness for the obligations each section names in `obligations:`.
 
 ## What happens downstream
 

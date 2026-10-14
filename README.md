@@ -62,7 +62,8 @@ Each section names the law-map obligations it serves in `obligations:`;
 obligations' groundings (review dates, source liveness). `(review_by:
 YYYY-MM-DD)` dates in a section's 制度変更ウォッチ are still checked when
 present — an expired one is an error — and are required only for a section
-with no obligations.
+with no obligations. kanon runs no scheduled freshness job of its own;
+`just drift` / `just sources` remain as local author tools.
 
 ## Contract
 
