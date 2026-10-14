@@ -15,6 +15,7 @@
 #   embedded          an embedded / microcontroller project
 #   scraping          the project fetches the web (any engine)
 #   oj_code           a code-submission judge workspace
+#   kaggle            a kaggle (data competition) workspace
 #   mcp               an MCP server is generated
 #   data_science      a data-science / kaggle layout
 #   web_api           an HTTP API project
@@ -79,7 +80,7 @@ sections:
     placement: agents_md
   - id: domain-ml-bias
     file: domain/ml-bias.md.jinja
-    when: data_science
+    when: [data_science, kaggle]
     placement: agents_md
   - id: domain-scraping-law
     file: domain/scraping-law.md.jinja

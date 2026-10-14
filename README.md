@@ -55,7 +55,7 @@ Consumers:
 **where** it wants to land (`placement`: `agents_md` / `charter` /
 `legal_md` / `standalone`) and **under what abstract condition** (`when`, a
 condition name or list: `always` / `library` / `cli` / `embedded` /
-`scraping` / `oj_code` / `mcp` / `data_science` / `web_api` / `personal_data` /
+`scraping` / `oj_code` / `kaggle` / `mcp` / `data_science` / `web_api` / `personal_data` /
 `face_recognition` / `medtech` / `commercial` / `eu_market` / `jp` /
 `ai_assisted`).
 

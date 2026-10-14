@@ -26,6 +26,7 @@ WHEN_VOCAB = {
     "medtech",
     "scraping",
     "oj_code",
+    "kaggle",
     "mcp",
     "data_science",
     "web_api",
