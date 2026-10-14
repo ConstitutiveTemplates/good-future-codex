@@ -1,16 +1,40 @@
-{# ethics: id=domain-llm-appsec version=2026-09-18.1 status=active
-   triggers=["llm","prompt","agent","mcp","tool-call","openai"]
-   sources=["https://genai.owasp.org/llm-top-10/"] #}
+---
+id: domain-llm-appsec
+version: "2026-09-18.1"
+status: active
+placement: agents_md
+when: mcp
+obligations:
+  - obligation.ai.llm-appsec-baseline
+triggers:
+  keywords: ["llm", "prompt", "agent", "mcp", "tool-call", "openai"]
+  pattern: '(?i)\b(llm|prompt|agent|tool[_-]?call|mcp|openai|anthropic|chat|completion|system[_-]?prompt|guardrail)\b'
+  config: '(?i)\b(shell\s*=\s*True|eval\(|subprocess|tool_choice|mcp|autonomous)\b'
+sources:
+  - https://genai.owasp.org/llm-top-10/
+license: CC-BY-4.0
+en:
+  title: "LLM apps / MCP security — least privilege, human approval and output validation by default"
+  summary:
+    - "Restrict tool permissions to an allowlist of the minimum CRUD needed."
+    - "Always insert a human approval step before destructive or irreversible operations."
+    - "Validate LLM output structurally before acting on it; never pass it straight to a shell."
+  prohibited:
+    - "Executing LLM output directly (shell=True, eval, string-concatenated SQL)."
+    - "Auto-approving destructive or irreversible operations (delete, payment, sending, production deploy)."
+    - "Issuing write-scoped tokens where read-only would do."
+    - "Embedding secrets (API keys, personal data) in prompts."
+    - "Putting full guardrail text or internal schemas in the system prompt (a bypass guide if leaked)."
+    - "Unbounded tool loops or API spend (no count or cost limit)."
+---
 # LLMアプリ/MCP安全設計 — 最小権限・人間承認・出力検証を既定にする
 
 > **適用条件**: LLM API呼び出し、ツール呼び出し、MCPサーバ/クライアント、
 > エージェントループを含むコードを生成・設計する場面。
 > 規模: 世界問題(OWASP基準は国際共通で、実インシデントも国境を跨ぐ)。
-> 配布: MCP(MCPサーバ・ツール呼び出しコードを生成するもの)。
 > 要約: (1)ツール権限はallowlistの最小CRUDに絞る (2)破壊的・不可逆な
 > 操作の前に必ず人間承認ステップを入れる (3)LLM出力は構造化検証してから
 > 実行し、shell直渡しをしない。詳細は本文。
-> Triggers: `(?i)\b(llm|prompt|agent|tool[_-]?call|mcp|openai|anthropic|chat|completion|system[_-]?prompt|guardrail)\b`.
 
 ## 事実
 
@@ -26,7 +50,7 @@ LLM09 誤情報(Misinformation)、LLM10 無制限消費、である。番号は�
 実行権を渡した設計が直接原因になる。誤情報は「流暢で自信のある誤り」
 として下流の意思決定を誘導するため、出力を検証なしで動作に使わない。
 次版(2026)は実証インシデントデータに基づく評価への転換が議論されている。
-出典: genai.owasp.org/llm-top-10 (REGISTRY.ymlに記録。次版は未公表・要確認)。
+出典: genai.owasp.org/llm-top-10 (sourcesに記録。次版は未公表・要確認)。
 
 ## 禁止パターン
 
@@ -58,9 +82,6 @@ LLM09 誤情報(Misinformation)、LLM10 無制限消費、である。番号は�
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(shell\s*=\s*True|eval\(|subprocess|tool_choice|mcp|autonomous)\b`
-  hit時は本節の存在をassert。
 - エージェントコードのレビュー項目: 「最大何が壊せるか」を一問し、
   その答えが人間承認を経ないと起きないことを確認。担当: コードレビュー役。
 

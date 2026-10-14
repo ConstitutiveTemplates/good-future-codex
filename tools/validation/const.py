@@ -14,46 +14,66 @@ RunnerFn = Callable[..., Any]
 REPO = Path(__file__).resolve().parent.parent.parent
 SECTIONS = REPO / "sections"
 MANIFEST = SECTIONS / "MANIFEST.yml"
+VOCABULARY = SECTIONS / "VOCABULARY.yml"
+LICENSE_FILE = SECTIONS / "LICENSE"
+# Files whose vocabulary tables tools/manifest.py regenerates.
+GENERATED_DOCS = (REPO / "README.md", REPO / "CONTRIBUTING.md")
 
-# --- Manifest vocabularies --------------------------------------------------
-WHEN_VOCAB = {
-    "always",
-    "library",
-    "cli",
-    "embedded",
-    "personal_data",
-    "face_recognition",
-    "medtech",
-    "scraping",
-    "oj_code",
-    "kaggle",
-    "mcp",
-    "data_science",
-    "web_api",
-    "commercial",
-    "eu_market",
-    "jp",
-    "ai_assisted",
-}
-PLACEMENT_VOCAB = {"agents_md", "charter", "legal_md", "standalone"}
-STATUS_VOCAB = {"draft", "active"}
+# --- Front matter contract --------------------------------------------------
+# The when / placement / status vocabularies live in sections/VOCABULARY.yml
+# (see :mod:`validation.vocabulary`); MANIFEST.yml is generated from the
+# section front matter plus that file (see :mod:`validation.manifest`).
 REQUIRED_HEADINGS = ("## 事実", "## 禁止パターン", "## 推奨設定", "## 運用チェック", "## 制度変更ウォッチ")
 
-# sections/<tier>/<slug>.md -- _template.md at the top level
-# is an authoring aid, not a section, and is deliberately not matched.
-SECTION_GLOB = "*/*.md"
+# sections/<tier>/<slug>.md -- _template.md at the top level is an
+# authoring aid, not a section, and is deliberately not matched.
+SECTION_SUFFIX = ".md"
+SECTION_GLOB = f"*/*{SECTION_SUFFIX}"
 
-# --- Section header/body patterns -------------------------------------------
-ETHICS_HEADER_RE = re.compile(r"\{#\s*ethics:\s*(.*?)#\}", re.DOTALL)
-HEADER_ID_RE = re.compile(r"\bid=(\S+)")
-HEADER_VERSION_RE = re.compile(r"\bversion=(\d{4}-\d{2}-\d{2}\.\d+)")
-HEADER_STATUS_RE = re.compile(r"\bstatus=(\w+)")
-HEADER_TRIGGERS_RE = re.compile(r"triggers=\[(.*?)\]", re.DOTALL)
+FRONT_MATTER_RE = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
+FRONT_MATTER_KEYS = (
+    "id", "version", "status", "placement", "when", "obligations",
+    "triggers", "sources", "license", "en",
+)
+TRIGGER_KEYS = ("keywords", "pattern", "config")
+EN_KEYS = ("title", "summary", "prohibited")
+VERSION_RE = re.compile(r"\d{4}-\d{2}-\d{2}\.\d+")
+OBLIGATION_ID_RE = re.compile(r"obligation\.[a-z0-9-]+\.[a-z0-9-]+")
+# Section prose is CC BY 4.0 (sections/LICENSE); code stays Apache-2.0.
+SECTION_LICENSE = "CC-BY-4.0"
+
+# --- Section body patterns --------------------------------------------------
 REVIEW_BY_RE = re.compile(r"review_by:\s*(\d{4}-\d{2}-\d{2})")
-HEADER_SOURCES_RE = re.compile(r"sources=\[(.*?)\]", re.DOTALL)
 URL_RE = re.compile(r"https?://[^\s)<>\]\"']+")
 JINJA_RE = re.compile(r"\{\{|\{%")
 REVIEW_HORIZON = dt.timedelta(days=30)
+
+# Phrases a section (body or en: block) must never contain: consumer
+# internals (kanon is consumer-agnostic), metadata that belongs in front
+# matter, and retired project names. (pattern, reason) pairs.
+BANNED_PHRASES: tuple[tuple[re.Pattern[str], str], ...] = tuple(
+    (re.compile(pattern, flags), reason)
+    for pattern, flags, reason in (
+        (r"REGISTRY\.ya?ml", 0, "consumer registry file"),
+        (r"_shared/", 0, "consumer template path"),
+        (r"copier", re.IGNORECASE, "consumer template engine"),
+        (r"\bQA\s*L[0-3]\b", 0, "consumer QA level"),
+        (r"test_ethics_registry", 0, "consumer test name"),
+        (r"\barchitekton", re.IGNORECASE, "consumer name"),
+        (r"\bdaimonion\b", re.IGNORECASE, "consumer name"),
+        (r"\w+_effective\b", 0, "consumer flag name"),
+        (r"^> *配布:|配布: *(library|cli|web|mcp|kaggle|data-science|IoT)", re.MULTILINE,
+         "distribution line (the front matter `when` carries it)"),
+        (r"^> *Triggers:", re.MULTILINE, "Triggers line (the front matter `triggers` carries it)"),
+        (r"設定側トリガー\(\s*Copier", 0, "consumer QA trigger"),
+        (
+            "|".join((r"ConstitutiveTemplates", r"python-copier-template", r"good-future-codex",
+                      r"\bcodex\b", r"\bfoundry\b", r"law-lint", r"\borimono\b", r"kasi-x")),
+            re.IGNORECASE,
+            "retired project name",
+        ),
+    )
+)
 
 # --- Declared-source liveness probing ---------------------------------------
 SOURCE_TIMEOUT = 10.0

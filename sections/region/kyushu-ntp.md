@@ -1,15 +1,41 @@
-{# ethics: id=region-kyushu-ntp version=2026-09-18.1 status=draft
-   triggers=["ntp","chrony","timesyncd","fukuoka","kyushu","133.100.9.2"]
-   sources=["https://www.janog.gr.jp/meeting/janog41/application/files/9815/1692/5488/janog41-sp10ntp-fujimura-03.pdf", "https://gigazine.net/news/20190702-fukuoka-u-ntp-server-shut-down/", "https://xtech.nikkei.com/atcl/nxt/mag/nc/18/020600011/092500040/"] #}
+---
+id: region-kyushu-ntp
+version: "2026-09-18.1"
+status: draft
+placement: agents_md
+when: jp
+obligations:
+  - obligation.security.public-ntp-hygiene
+triggers:
+  keywords: ["ntp", "chrony", "timesyncd", "fukuoka", "kyushu", "133.100.9.2"]
+  pattern: '(?i)\b(ntp|chrony|fukuoka|kyushu|133\.100\.9\.2)\b'
+  config: '(?i)\b(ntp|chrony|timesyncd|fukuoka|kyushu|133\.100\.9\.2|133\.100\.11\.8|clock\.nc\.fukuoka-u\.ac\.jp)\b'
+sources:
+  - https://www.janog.gr.jp/meeting/janog41/application/files/9815/1692/5488/janog41-sp10ntp-fujimura-03.pdf
+  - https://gigazine.net/news/20190702-fukuoka-u-ntp-server-shut-down/
+  - https://xtech.nikkei.com/atcl/nxt/mag/nc/18/020600011/092500040/
+license: CC-BY-4.0
+en:
+  title: "Kyushu NTP warning — do not use Fukuoka University's public NTP (scheduled for shutdown)"
+  summary:
+    - "Use pools (pool.ntp.org, ntp.nict.jp, ...)."
+    - "Do not hard-code Fukuoka University's NTP IPs or host names."
+    - "Do not depend on a single NTP server; retry with backoff and jitter."
+  prohibited:
+    - "New embedding of Fukuoka University IPs or host names (firmware, config, code, docs); move server settings to an NTP_SERVERS variable in .env."
+    - "Depending on a single NTP server (one 'server 133.100.9.2' line, a single hard-coded IP in chrony.conf)."
+    - "Unprotected retry storms (immediate, fixed-interval or infinite retries)."
+    - "Blanket blocking by nationality (block on behaviour: rate, SYN ratio, authentication failures)."
+    - "Logging or disclosing traffic content (not allowed without consent; secrecy of communications)."
+---
 # 九州NTP注意 — 福岡大公開NTPは使うな(廃止予定)
 
 > **結論**: `133.100.9.2` / `133.100.11.8` /
 > `clock.nc.fukuoka-u.ac.jp` は使わない。新規設定・ファーム埋め込み・
 > ドキュメント言及とも禁止。廃止予定の公開NTPに依存するな。
-> 規模: 世界問題(日本が困る・世界が犯人)。配布: IoT・CLIのみ。
+> 規模: 世界問題(日本が困る・世界が犯人)。
 > 要約: (1)pool利用(`pool.ntp.org` / `ntp.nict.jp`等) (2)福岡大IP・ホスト名の
 > 直書き禁止 (3)単一NTP依存禁止、リトライはbackoff+jitter。詳細は本文。
-> Triggers: `ntp` / `chrony` / `fukuoka` / `kyushu` / `133.100.9.2`.
 
 ## 事実
 
@@ -28,7 +54,7 @@ JANOG41時点で最大190Mbps/21万query/s超、2019年1月に常時270Mbps。
 TP-Link中継器の月715MBは実測例の一部で、複数メーカの実機で確認済み。
 239ヶ国から到達。中国・台湾メーカが prominent だが中国発の断定はしない。
 出典: JANOG41藤村/谷崎スライド、GIGAZINE 2019-07-02、
-日経xTECH 2019-09-27(いずれもREGISTRY.ymlに記録)。
+日経xTECH 2019-09-27(いずれもsourcesに記録)。
 一次(福岡大学IPC)で現状を確認すること(TODO)。
 
 ## 禁止パターン
@@ -56,9 +82,6 @@ TP-Link中継器の月715MBは実測例の一部で、複数メーカの実機�
 - 公開サーバを運用する場合: capacity計画・rate制限・監視・廃止計画
   (BGP blackhole+継続計測の前例)を開始時に用意する。JANOG41 p4
   「そのサービス、ちゃんと終了できますか?」を設計レビュー項目にする。
-- 設定側トリガー( Copier QA L1用):
-  `(?i)\b(ntp|chrony|timesyncd|fukuoka|kyushu|133\.100\.9\.2|133\.100\.11\.8|clock\.nc\.fukuoka-u\.ac\.jp)\b`
-  hit時は本節の存在をassert。
 - ログ側バースト(手順のみ、テストしない): 1分窓で同一/24からN超、
   SYNのみ比率、既定UAで集計。GeoIPは版日付を記録。
   CNレンジ正規表現の直書きはしない。

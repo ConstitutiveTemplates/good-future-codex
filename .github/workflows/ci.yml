@@ -19,5 +19,7 @@ jobs:
           enable-cache: true
       - name: Validate sections corpus
         run: uv run --with pyyaml python tools/validate.py
+      - name: Generated MANIFEST in sync
+        run: uv run --with pyyaml python tools/manifest.py --check
       - name: Tests
         run: uv run --with pytest --with pyyaml python -m pytest -q

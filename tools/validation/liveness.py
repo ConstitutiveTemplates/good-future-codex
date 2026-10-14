@@ -37,7 +37,7 @@ def format_source_summary(probed: int, flagged: int) -> str:
 
 def print_source_summary(probed: int, flagged: int) -> None:
     if not probed:
-        print("[drift] no source URLs declared (add sources=[...] to ethics headers)")
+        print("[drift] no source URLs declared (add sources: to section front matter)")
     else:
         print(format_source_summary(probed, flagged))
         if not flagged:

@@ -1,6 +1,33 @@
-{# ethics: id=domain-prompt-injection version=2026-10-06.1 status=draft
-   triggers=["prompt injection","jailbreak","indirect injection","agent hijacking","system prompt"]
-   sources=["https://genai.owasp.org/llm-top-10", "https://arxiv.org/abs/2406.13352", "https://www.nist.gov/news-events/news/2025/01/technical-blog-strengthening-ai-agent-hijacking-evaluations"] #}
+---
+id: domain-prompt-injection
+version: "2026-10-06.1"
+status: draft
+placement: agents_md
+when: mcp
+obligations:
+  - obligation.security.prompt-injection-defense
+triggers:
+  keywords: ["prompt injection", "jailbreak", "indirect injection", "agent hijacking", "system prompt"]
+  pattern: '(?i)\b(prompt[- ]?injection|jailbreak|indirect[- ]?injection|agent[- ]?hijack|system[- ]?prompt|tool[_-]?poisoning)\b'
+  config: '(?i)\b(prompt|llm|agent|mcp|rag|system[_-]?prompt)\b'
+sources:
+  - https://genai.owasp.org/llm-top-10
+  - https://arxiv.org/abs/2406.13352
+  - https://www.nist.gov/news-events/news/2025/01/technical-blog-strengthening-ai-agent-hijacking-evaluations
+license: CC-BY-4.0
+en:
+  title: "Prompt injection — never execute external input as instructions"
+  summary:
+    - "Separate instructions from data; never execute external input as instructions."
+    - "Restrict agent permissions to a minimal allowlist."
+    - "Default to human approval for destructive or outbound operations."
+  prohibited:
+    - "Concatenating external text (web pages, email bodies, files, DB rows, tool output) into system prompts or instruction fields without delimiters or labels."
+    - "Passing externally sourced commands ('follow the instructions on this page') straight to downstream tool calls without validation or an allowlist."
+    - "Giving agents broad powers (delete everything, send externally, pay, deploy) without confirmation."
+    - "Putting secrets (tokens, keys, personal data) in the same context as external input without separation."
+    - "Relying solely on 'the prompt says do not obey' (instruction-level deterrence is demonstrably bypassable)."
+---
 # プロンプトインジェクション — 外部入力を指示として実行しない
 
 > **適用条件**: LLM API呼び出し・RAG・ツール呼び出し・エージェント
@@ -8,11 +35,9 @@
 > ファイル・DB行・ツール出力)をモデルに入れる設計はすべて対象。
 > 規模: 世界問題(攻撃手法と対策基準は国際共通で、実証データも
 > 国境を跨ぐ)。
-> 配布: mcp(MCPサーバ・ツール呼び出しコードを生成するもの)。
 > 要約: (1)指示とデータを分離し、外部入力を指示として実行しない
 > (2)エージェントの権限はallowlistの最小限に絞る
 > (3)破壊的・送信系の操作は人間承認を既定にする。詳細は本文。
-> Triggers: `(?i)\b(prompt[- ]?injection|jailbreak|indirect[- ]?injection|agent[- ]?hijack|system[- ]?prompt|tool[_-]?poisoning)\b`.
 
 ## 事実
 
@@ -78,9 +103,7 @@ execute(action)
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(prompt|llm|agent|mcp|rag|system[_-]?prompt)\b`
-  hit時は本節の存在をassertし、外部入力の扱いを確認する。
+- 設定側トリガー(front matter の `triggers.config`)に当たったら、外部入力の扱いを確認する。
 - レビュー項目に「外部入力→指示の経路」を必須化する(結合箇所の列挙)。
   担当: セキュリティレビュー役。
 

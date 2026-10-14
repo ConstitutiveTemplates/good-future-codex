@@ -7,13 +7,13 @@ body:
     attributes:
       value: |
         Corrections to section prose or sources land here, not in the
-        consumer template. The fix bumps the section's header `version` to
+        consumer template. The fix bumps the section's front matter `version` to
         `YYYY-MM-DD.rev`; see CONTRIBUTING.md.
   - type: input
     id: section_id
     attributes:
       label: Section id
-      description: The `<tier>-<slug>` id from the section header (must match the MANIFEST id).
+      description: The `<tier>-<slug>` id from the section front matter (matches its path).
       placeholder: "region-eu-cra"
     validations:
       required: true

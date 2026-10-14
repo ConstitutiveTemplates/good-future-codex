@@ -1,17 +1,44 @@
-{# ethics: id=baseline-pki-chain version=2026-09-21.2 status=active
-   triggers=["tls","cert","trust-store","pinning","mtls","ca_bundle"]
-   sources=["https://letsencrypt.org/certificates/", "https://letsencrypt.org/2023/07/10/cross-sign-expiration", "https://letsencrypt.org/2024/04/12/changes-to-issuance-chains", "https://community.letsencrypt.org/t/isrg-root-x2-cross-signed-by-isrg-root-x1/239124", "https://community.cloudflare.com/t/clarification-about-email-upcoming-lets-encrypt-certificate-chain-change/628713"] #}
+---
+id: baseline-pki-chain
+version: "2026-09-21.2"
+status: active
+placement: agents_md
+when: [embedded, cli, web_api]
+obligations:
+  - obligation.crypto.no-deprecated-algorithms
+triggers:
+  keywords: ["tls", "cert", "trust-store", "pinning", "mtls", "ca_bundle"]
+  pattern: '(?i)\b(certificat|trust\s?store|ca_bundle|pinn|openssl|requests|httpx|urllib3|mtls|root\s?ca|intermediate)\b'
+  config: '(?i)\b(chain\.pem|ca_bundle|CERT_NONE|verify\s*=\s*False|pin_sha256)\b'
+sources:
+  - https://letsencrypt.org/certificates/
+  - https://letsencrypt.org/2023/07/10/cross-sign-expiration
+  - https://letsencrypt.org/2024/04/12/changes-to-issuance-chains
+  - https://community.letsencrypt.org/t/isrg-root-x2-cross-signed-by-isrg-root-x1/239124
+  - https://community.cloudflare.com/t/clarification-about-email-upcoming-lets-encrypt-certificate-chain-change/628713
+license: CC-BY-4.0
+en:
+  title: "PKI chain changes — do not hard-code intermediate certificates or issuance chains"
+  summary:
+    - "Do not bundle or pin intermediate certificates or issuance chains."
+    - "Verify against the OS/system trust store and keep a way to update it."
+    - "If you pin, pin a set of public keys with a backup key, never a single key."
+  prohibited:
+    - "Bundling intermediate certificates in the repository or burning them into firmware (a fixed chain.pem)."
+    - "Pinning a single intermediate certificate or SPKI with no backup key."
+    - "Freezing a private trust store that cannot pick up system updates."
+    - "Suppressing verification (verify=False, ssl.CERT_NONE) to work around failures."
+    - "Branching on issuer names or chain layout (issuer CN == \"R3\", ...)."
+---
 # PKIチェーン再編 — 中間証明書・発行チェーンをハードコードしない
 
 > **適用条件**: TLSクライアントの実装、証明書ピン留め、trust storeの
 > 同梱・固定、mTLS、長寿命デバイスのファームに証明書を焼く場面。
 > 規模: 世界問題(チェーン切れは全世界のクライアントで同時に起きる)。
-> 配布: IoT・cli・web(長寿命クライアント・証明書ピン留めを行うもの)。
 > 要約: (1)中間証明書や発行チェーンの同梱・固定をしない
 > (2)検証はOS/システムのtrust storeに従い、更新手段を持つ
 > (3)pinする場合は公開鍵集合+バックアップ鍵で、単一鍵に結びつけない。
 > 詳細は本文。
-> Triggers: `(?i)\b(certificat|trust\s?store|ca_bundle|pinn|openssl|requests|httpx|urllib3|mtls|root\s?ca|intermediate)\b`.
 
 ## 事実
 
@@ -25,7 +52,7 @@ DST Root CA X3によるクロス署名は2024-09-30に失効し、長いチェ�
 ハードコードされた中間証明書、同梱の古いtrust bundle、特定発行チェーンへ
 のピン留めは、この種の切り替えで検証失敗(通信障害)になる。
 出典: Let's Encrypt公式(chains/ブログ)、コミュニティスレッド、
-Cloudflareコミュニティ(REGISTRY.ymlに記録)。
+Cloudflareコミュニティ(sourcesに記録)。
 
 ## 禁止パターン
 
@@ -61,9 +88,6 @@ pin_set = {"sha256/現行の鍵", "sha256/バックアップ鍵"}  # 手順と�
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(chain\.pem|ca_bundle|CERT_NONE|verify\s*=\s*False|pin_sha256)\b`
-  hit時は本節の存在をassert。
 - 自プロジェクトが同梱する証明書・ピン留め一覧を棚卸しし、
   「発行チェーン切り替えで壊れるか」を質問できる状態にする。
   担当: リリース管理者。

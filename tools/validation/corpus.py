@@ -1,43 +1,35 @@
-"""Corpus validators: MANIFEST rows, section headers, bodies, review dates."""
+"""Corpus validators: front matter, bodies, review dates, generated MANIFEST."""
 
 from __future__ import annotations
 
 import datetime as dt
+import re
 from pathlib import Path
 
 import yaml
 
 from .const import (
-    ETHICS_HEADER_RE,
-    HEADER_ID_RE,
-    HEADER_SOURCES_RE,
-    HEADER_STATUS_RE,
-    HEADER_TRIGGERS_RE,
-    HEADER_VERSION_RE,
+    BANNED_PHRASES,
+    EN_KEYS,
+    FRONT_MATTER_KEYS,
     JINJA_RE,
-    MANIFEST,
-    PLACEMENT_VOCAB,
+    OBLIGATION_ID_RE,
+    REPO,
     REQUIRED_HEADINGS,
     REVIEW_BY_RE,
     REVIEW_HORIZON,
     SECTION_GLOB,
+    SECTION_LICENSE,
+    SECTION_SUFFIX,
     SECTIONS,
-    STATUS_VOCAB,
-    WHEN_VOCAB,
+    TRIGGER_KEYS,
+    VERSION_RE,
 )
+from .frontmatter import split_front_matter
+from .manifest import expected_outputs, stale_outputs
 from .report import error, warn
-
-
-def load_manifest() -> dict:
-    if not MANIFEST.is_file():
-        error(f"{MANIFEST}: missing")
-        return {}
-    with MANIFEST.open(encoding="utf-8") as fh:
-        data = yaml.safe_load(fh)
-    if not isinstance(data, dict) or not isinstance(data.get("sections"), list):
-        error("MANIFEST.yml: top-level 'sections' list missing")
-        return {}
-    return data
+from .upstream import obligation_sections
+from .vocabulary import duplicate_conditions, load_vocabulary, when_vocab
 
 
 def section_files() -> list[Path]:
@@ -46,42 +38,103 @@ def section_files() -> list[Path]:
 
 def expected_id(path: Path) -> str:
     """region/eu-cra.md -> region-eu-cra (tier-slug naming rule)."""
-    return f"{path.parent.name}-{path.name.removesuffix('.md')}"
+    return f"{path.parent.name}-{path.name.removesuffix(SECTION_SUFFIX)}"
 
 
-def parse_header(path: Path) -> dict[str, str] | None:
-    text = path.read_text(encoding="utf-8")
-    match = ETHICS_HEADER_RE.search(text)
-    if match is None:
-        error(f"{path}: missing '{{# ethics: ... #}}' header comment")
-        return None
-    blob = match.group(1)
-    id_m = HEADER_ID_RE.search(blob)
-    version_m = HEADER_VERSION_RE.search(blob)
-    status_m = HEADER_STATUS_RE.search(blob)
-    triggers_m = HEADER_TRIGGERS_RE.search(blob)
-    sources_m = HEADER_SOURCES_RE.search(blob)
-    header: dict[str, str] = {}
-    if not id_m:
-        error(f"{path}: ethics header missing id=")
+def _is_str_list(value: object, *, allow_empty: bool = False) -> bool:
+    return (
+        isinstance(value, list)
+        and (allow_empty or bool(value))
+        and all(isinstance(v, str) and v.strip() for v in value)
+    )
+
+
+def _check_regex(path: Path, key: str, value: object) -> None:
+    if not isinstance(value, str) or not value:
+        error(f"{path}: triggers.{key} must be a non-empty regex string")
+        return
+    try:
+        re.compile(value)
+    except re.error as exc:
+        error(f"{path}: triggers.{key} does not compile: {exc}")
+
+
+def _check_triggers(path: Path, triggers: object) -> None:
+    if not isinstance(triggers, dict):
+        error(f"{path}: triggers must be a mapping with keywords/pattern")
+        return
+    for key in sorted(set(triggers) - set(TRIGGER_KEYS)):
+        error(f"{path}: unknown triggers key {key!r} (allowed: {', '.join(TRIGGER_KEYS)})")
+    if not _is_str_list(triggers.get("keywords")):
+        error(f"{path}: triggers.keywords must be a non-empty string list")
+    _check_regex(path, "pattern", triggers.get("pattern"))
+    if "config" in triggers:
+        _check_regex(path, "config", triggers["config"])
+
+
+def _check_en(path: Path, en: object) -> None:
+    if not isinstance(en, dict):
+        error(f"{path}: en must be a mapping with title/summary/prohibited")
+        return
+    for key in sorted(set(en) - set(EN_KEYS)):
+        error(f"{path}: unknown en key {key!r} (allowed: {', '.join(EN_KEYS)})")
+    if not isinstance(en.get("title"), str) or not en["title"].strip():
+        error(f"{path}: en.title must be a non-empty string")
+    for key in ("summary", "prohibited"):
+        if not _is_str_list(en.get(key)):
+            error(f"{path}: en.{key} must be a non-empty string list")
+
+
+def _check_when(path: Path, when: object, vocab: set[str]) -> None:
+    items = when if isinstance(when, list) else [when]
+    if not items or not all(isinstance(w, str) for w in items):
+        error(f"{path}: when must be a condition or a non-empty list of conditions")
+        return
+    bad = [w for w in items if w not in vocab]
+    if bad:
+        error(f"{path}: when {bad!r} not in VOCABULARY.yml {sorted(vocab)}")
+
+
+def check_front_matter(path: Path, front: dict, vocab: dict) -> None:
+    for key in FRONT_MATTER_KEYS:
+        if key not in front:
+            error(f"{path}: front matter missing {key!r}")
+    for key in sorted(set(front) - set(FRONT_MATTER_KEYS)):
+        error(f"{path}: unknown front matter key {key!r}")
+    sid = front.get("id")
+    exp = expected_id(path)
+    if sid != exp:
+        error(f"{path}: id {sid!r} != path-derived id {exp!r}")
+    version = front.get("version")
+    if not isinstance(version, str) or not VERSION_RE.fullmatch(version):
+        error(f"{path}: version must be a quoted 'YYYY-MM-DD.rev' string (got {version!r})")
+    if front.get("status") not in vocab.get("status", {}):
+        error(f"{path}: status {front.get('status')!r} not in {sorted(vocab.get('status', {}))}")
+    if front.get("placement") not in vocab.get("placement", {}):
+        error(f"{path}: placement {front.get('placement')!r} not in {sorted(vocab.get('placement', {}))}")
+    if "when" in front:
+        _check_when(path, front["when"], when_vocab(vocab))
+    obligations = front.get("obligations", [])
+    if not _is_str_list(obligations, allow_empty=True):
+        error(f"{path}: obligations must be a list of law-map obligation ids")
     else:
-        header["id"] = id_m.group(1)
-    if not version_m:
-        error(f"{path}: ethics header missing version=<YYYY-MM-DD.rev> (got {id_m and blob[:60]!r})")
-    else:
-        header["version"] = version_m.group(1)
-    if not status_m:
-        error(f"{path}: ethics header missing status=")
-    else:
-        header["status"] = status_m.group(1)
-    if not triggers_m or not triggers_m.group(1).strip():
-        error(f"{path}: ethics header missing non-empty triggers=[...]")
-    if sources_m:
-        header["sources"] = sources_m.group(1)
-    return header
+        for ob in obligations:
+            if not OBLIGATION_ID_RE.fullmatch(ob):
+                error(f"{path}: obligation id {ob!r} is not 'obligation.<category>.<slug>'")
+    if "triggers" in front:
+        _check_triggers(path, front["triggers"])
+    sources = front.get("sources", [])
+    if not _is_str_list(sources) or not all(s.startswith(("http://", "https://")) for s in sources):
+        error(f"{path}: sources must be a non-empty list of http(s) URLs")
+    if front.get("license") != SECTION_LICENSE:
+        error(f"{path}: license must be {SECTION_LICENSE!r} (section prose is CC BY 4.0)")
+    if "en" in front:
+        _check_en(path, front["en"])
 
 
 def check_headings(path: Path, body: str) -> None:
+    if not body.lstrip("\n").startswith("# "):
+        error(f"{path}: body must open with a '# <title>' line")
     positions: dict[str, int] = {}
     for heading in REQUIRED_HEADINGS:
         idx = body.find(heading)
@@ -110,11 +163,24 @@ def _report_review_date(path: Path, due: dt.date, today: dt.date, *, drift_mode:
             warn(msg)
 
 
-def check_review_by(path: Path, body: str, drift_mode: bool = False) -> list[tuple[str, dt.date]]:
+def check_review_by(
+    path: Path,
+    body: str,
+    drift_mode: bool = False,
+    *,
+    required: bool = True,
+) -> list[tuple[str, dt.date]]:
+    """Check ``(review_by: YYYY-MM-DD)`` dates in a body.
+
+    ``required`` is False for sections that reference law-map obligations:
+    law-map owns their freshness, so a missing date is not an error. Dates
+    that are present are still checked -- an expired one is a stale claim.
+    """
     found = [(m.group(1), dt.date.fromisoformat(m.group(1))) for m in REVIEW_BY_RE.finditer(body)]
     if not found:
-        if not drift_mode:
-            error(f"{path}: no (review_by: YYYY-MM-DD) date in 制度変更ウォッチ")
+        if required and not drift_mode:
+            error(f"{path}: no (review_by: YYYY-MM-DD) date in 制度変更ウォッチ "
+                  "and no law-map obligations to own its freshness")
         return found
     today = dt.datetime.now(dt.UTC).date()
     for _, due in found:
@@ -122,100 +188,93 @@ def check_review_by(path: Path, body: str, drift_mode: bool = False) -> list[tup
     return found
 
 
-def check_flag_agnostic(path: Path, text: str) -> None:
-    header = ETHICS_HEADER_RE.search(text)
-    if header is None:
-        return  # parse_header already errored
-    body = text[header.end():]
+def check_flag_agnostic(path: Path, body: str) -> None:
     for match in JINJA_RE.finditer(body):
         snippet = body[max(0, match.start() - 25): match.start() + 10].replace("\n", " ")
-        error(f"{path}: jinja expression {match.group(0)!r} in body after ethics "
-              f"header (near {snippet!r})")
+        error(f"{path}: template expression {match.group(0)!r} in body (near {snippet!r})")
 
 
-def _validate_manifest_rows(manifest_rows: list) -> dict[str, dict]:
-    manifest_by_file: dict[str, dict] = {}
-    seen_ids: set[str] = set()
-    for row in manifest_rows:
-        if not isinstance(row, dict):
-            error(f"MANIFEST.yml: section row {row!r} is not a mapping")
-            continue
-        sid = row.get("id")
-        if not isinstance(sid, str) or not sid:
-            error(f"MANIFEST.yml: section row {row!r} has no string id")
-            continue
-        if sid in seen_ids:
-            error(f"MANIFEST.yml: duplicate section id {sid!r}")
-        seen_ids.add(sid)
-        when = row.get("when")
-        when_items = when if isinstance(when, list) else [when]
-        bad = [w for w in when_items if w not in WHEN_VOCAB]
-        if bad:
-            error(f"MANIFEST.yml: section {sid!r}: when {bad!r} not in {sorted(WHEN_VOCAB)}")
-        placement = row.get("placement")
-        if placement not in PLACEMENT_VOCAB:
-            error(f"MANIFEST.yml: section {sid!r}: placement {placement!r} not in {sorted(PLACEMENT_VOCAB)}")
-        file = row.get("file")
-        if not isinstance(file, str):
-            error(f"MANIFEST.yml: section {sid!r}: file must be a string")
-        elif not (SECTIONS / file).is_file():
-            error(f"MANIFEST.yml: section {sid!r}: file {file!r} does not exist")
-        else:
-            manifest_by_file[file] = row
-    return manifest_by_file
+def check_banned_phrases(path: Path, text: str, where: str) -> None:
+    for pattern, reason in BANNED_PHRASES:
+        for match in pattern.finditer(text):
+            error(f"{path}: {where} contains {match.group(0)!r} ({reason})")
 
 
-def _validate_section_file(
-    path: Path,
-    row: dict | None,
-    seen_ids: set[str],
-    *,
-    drift_mode: bool,
-) -> None:
-    header = parse_header(path)
-    if header is not None:
-        sid = header.get("id")
-        exp = expected_id(path)
-        if sid and row is not None and sid != row.get("id"):
-            error(f"{path}: header id {sid!r} != MANIFEST id {row.get('id')!r}")
-        if sid and sid != exp:
-            error(f"{path}: header id {sid!r} != path-derived id {exp!r}")
-        if header.get("status") and header["status"] not in STATUS_VOCAB:
-            error(f"{path}: status {header['status']!r} not in {sorted(STATUS_VOCAB)}")
-        if sid:
-            if sid in seen_ids:
-                error(f"{path}: duplicate section id {sid!r}")
-            seen_ids.add(sid)
+def _en_text(front: dict) -> str:
+    en = front.get("en")
+    if not isinstance(en, dict):
+        return ""
+    parts = [str(en.get("title", ""))]
+    for key in ("summary", "prohibited"):
+        value = en.get(key)
+        if isinstance(value, list):
+            parts += [str(v) for v in value]
+    return "\n".join(parts)
+
+
+def _validate_section_file(path: Path, vocab: dict, seen_ids: set[str], *, drift_mode: bool) -> None:
     text = path.read_text(encoding="utf-8")
-    check_flag_agnostic(path, text)
-    check_headings(path, text)
-    check_review_by(path, text, drift_mode=drift_mode)
+    try:
+        front, body = split_front_matter(text)
+    except yaml.YAMLError as exc:
+        error(f"{path}: front matter is not valid YAML: {exc}")
+        return
+    if front is None:
+        error(f"{path}: missing '---' YAML front matter")
+        return
+    check_front_matter(path, front, vocab)
+    sid = front.get("id")
+    if isinstance(sid, str):
+        if sid in seen_ids:
+            error(f"{path}: duplicate section id {sid!r}")
+        seen_ids.add(sid)
+    check_flag_agnostic(path, body)
+    check_banned_phrases(path, body, "body")
+    check_banned_phrases(path, _en_text(front), "en block")
+    check_headings(path, body)
+    check_review_by(path, body, drift_mode=drift_mode, required=not front.get("obligations"))
 
 
-def validate_section_files(
-    files: list[Path],
-    manifest_by_file: dict[str, dict],
-    *,
-    drift_mode: bool,
-) -> None:
+def validate_section_files(files: list[Path], vocab: dict, *, drift_mode: bool) -> None:
     seen_ids: set[str] = set()
     for path in files:
-        rel = path.relative_to(SECTIONS).as_posix()
-        row = manifest_by_file.get(rel)
-        if row is None:
-            error(f"{path}: section file not listed in MANIFEST.yml")
-        _validate_section_file(path, row, seen_ids, drift_mode=drift_mode)
+        _validate_section_file(path, vocab, seen_ids, drift_mode=drift_mode)
 
 
-def validate_corpus(*, drift_mode: bool = False) -> tuple[dict[str, dict], list[Path]]:
-    """Run MANIFEST + section-file validation; return lookup data for callers."""
-    manifest = load_manifest()
-    manifest_rows = manifest.get("sections", []) if manifest else []
-    manifest_by_file = _validate_manifest_rows(manifest_rows)
+def check_law_map_links(files: list[Path], links: dict[str, set[str]] | None) -> None:
+    """Warn when a section's ``obligations`` and law-map's ``related_sections`` disagree."""
+    if links is None:
+        return
+    for path in files:
+        try:
+            front, _ = split_front_matter(path.read_text(encoding="utf-8"))
+        except yaml.YAMLError:
+            continue
+        if not front or not isinstance(front.get("obligations"), list):
+            continue
+        ours = set(front["obligations"])
+        theirs = links.get(str(front.get("id")), set())
+        if ours != theirs:
+            warn(f"{path}: obligations {sorted(ours)} != law-map related_sections {sorted(theirs)}")
+
+
+def check_generated_in_sync() -> None:
+    try:
+        outputs = expected_outputs()
+    except (OSError, yaml.YAMLError, TypeError) as exc:
+        error(f"cannot regenerate MANIFEST.yml: {exc}")
+        return
+    for path in stale_outputs(outputs):
+        error(f"{path.relative_to(REPO)}: out of sync with section front matter (run `just manifest`)")
+
+
+def validate_corpus(*, drift_mode: bool = False) -> list[Path]:
+    """Validate every section file and the generated MANIFEST; return the files."""
+    vocab = load_vocabulary()
+    for dupe in duplicate_conditions(vocab):
+        error(f"VOCABULARY.yml: condition {dupe!r} appears in more than one group")
     files = section_files()
-    validate_section_files(files, manifest_by_file, drift_mode=drift_mode)
-    return manifest_by_file, files
-
-
-# Back-compat alias for the pre-split private name.
-_validate_section_files = validate_section_files
+    validate_section_files(files, vocab, drift_mode=drift_mode)
+    check_law_map_links(files, obligation_sections())
+    check_generated_in_sync()
+    return files

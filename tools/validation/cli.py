@@ -31,7 +31,7 @@ def main(argv: list[str] | None = None) -> int:
                         "exit 1 when any URL is flagged (with --drift: single probe run, exit reflects sources)")
     args = parser.parse_args(argv)
 
-    _, files = validate_corpus(drift_mode=args.drift)
+    files = validate_corpus(drift_mode=args.drift)
 
     if args.drift:
         _, flagged = drift_report()

@@ -24,26 +24,18 @@ def sections_dir(tmp_path: Path) -> Path:
     root = tmp_path / "sections"
     (root / "baseline").mkdir(parents=True)
     (root / "lang").mkdir(parents=True)
+    # Generated files are never scanned for sources.
     (root / "MANIFEST.yml").write_text(
-        yaml.safe_dump(
-            {
-                "sections": [
-                    {
-                        "id": "baseline-demo",
-                        "file": "baseline/demo.md",
-                        "when": "always",
-                        "placement": "agents_md",
-                        "sources": ["https://example.com/manifest"],
-                    }
-                ]
-            }
-        ),
+        yaml.safe_dump({"sections": [{"id": "baseline-demo", "sources": ["https://example.com/manifest"]}]}),
         encoding="utf-8",
     )
     (root / "baseline" / "demo.md").write_text(
-        "{# ethics: id=baseline-demo version=2026-10-01.1 status=active\n"
-        '   triggers=["demo"]\n'
-        '   sources=["https://example.com/header", "https://example.com/shared"] #}\n'
+        "---\n"
+        "id: baseline-demo\n"
+        "sources:\n"
+        "  - https://example.com/header\n"
+        "  - https://example.com/shared\n"
+        "---\n"
         "# Demo\n"
         "## 事実\n"
         "see https://example.com/body and https://example.com/shared.\n",
@@ -66,7 +58,7 @@ def sections_dir(tmp_path: Path) -> Path:
 
 def test_collect_covers_manifest_sections_and_yaml(sections_dir: Path) -> None:
     collected = v.collect_source_urls(sections_dir)
-    assert collected["MANIFEST.yml"] == ["https://example.com/manifest"]
+    assert "MANIFEST.yml" not in collected
     assert collected["baseline/demo.md"] == [
         "https://example.com/body",
         "https://example.com/header",
@@ -77,8 +69,7 @@ def test_collect_covers_manifest_sections_and_yaml(sections_dir: Path) -> None:
 
 def test_collect_dedups_shared_url_across_origins(sections_dir: Path) -> None:
     (sections_dir / "baseline" / "other.md").write_text(
-        "{# ethics: id=baseline-other version=2026-10-01.1 status=draft\n"
-        '   triggers=["x"] sources=["https://example.com/shared"] #}\n'
+        "---\nid: baseline-other\nsources: [https://example.com/shared]\n---\n"
         "body https://example.com/shared\n",
         encoding="utf-8",
     )
@@ -89,14 +80,13 @@ def test_collect_dedups_shared_url_across_origins(sections_dir: Path) -> None:
         return "200"
 
     probed, flagged = v.check_sources(sections_dir, probe=probe)
-    assert probed == len(set(calls)) == 5
+    assert probed == len(set(calls)) == 4
     assert flagged == []
 
 
 def test_extract_section_urls_strips_trailing_punct() -> None:
     text = (
-        "{# ethics: id=x-y version=2026-10-01.1 status=draft\n"
-        '   triggers=["x"] sources=["https://example.com/a."] #}\n'
+        '---\nid: x-y\nsources: ["https://example.com/a."]\n---\n'
         "see (https://example.com/b), https://example.com/c!\n"
     )
     assert v.extract_section_urls(text) == [

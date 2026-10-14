@@ -1,6 +1,32 @@
-{# ethics: id=domain-ml-bias version=2026-10-15.1 status=active
-   triggers=["fairness","bias","subgroup","xai","demographic"]
-   sources=["https://www.nejm.org/doi/full/10.1056/NEJMc1919366", "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"] #}
+---
+id: domain-ml-bias
+version: "2026-10-15.1"
+status: active
+placement: agents_md
+when: [data_science, kaggle]
+obligations:
+  - obligation.ai.ml-bias-mitigation
+triggers:
+  keywords: ["fairness", "bias", "subgroup", "xai", "demographic"]
+  pattern: '(?i)\b(fairness|bias|demographic|subgroup|shap|xai|explainab|protected|disparate|equalized|parity)\b'
+  config: '(?i)\b(fairlearn|shap|groupby\(.*(race|gender|age|sex)|fairness|subgroup)\b'
+sources:
+  - https://www.nejm.org/doi/full/10.1056/NEJMc1919366
+  - https://eur-lex.europa.eu/eli/reg/2024/1689/oj
+license: CC-BY-4.0
+en:
+  title: "ML bias — build per-group evaluation, explainability and human review into evaluation"
+  summary:
+    - "Always report per-group performance, not just average accuracy."
+    - "Dropping protected attributes does not remove discrimination; handle proxies."
+    - "Require human review for decisions that affect life opportunities."
+  prohibited:
+    - "Treating a dropped protected-attribute column (race, sex, age, ...) as the fix while proxies (postcode, hospital ID, ...) restore it."
+    - "Reporting only average accuracy (no per-group sensitivity, specificity or FPR)."
+    - "Fully automated decisions without human review in medicine, employment, lending or law enforcement."
+    - "Choosing fairness metrics undocumented (metric changes without review)."
+    - "Leaking evaluation data into training data (making per-group evaluation impossible)."
+---
 # MLバイアス — 集団別評価・説明可能性・人間確認を評価に組み込む
 
 > **適用条件**: モデル学習・評価パイプライン、スクリーニング/判定
@@ -8,11 +34,9 @@
 > 人について自動的に決める場合(評価・順位付け・承認・審査・照合)は、
 > 精度の高低にかかわらず本節の対象。
 > 規模: 世界問題(偏ったデータはどの国の集団にも不利に働き得る)。
-> 配布: data-science / kaggle(モデル学習・評価を含むもの)。
 > 要約: (1)平均精度だけでなく集団別の性能を必ず出す (2)protected
 > attributeのdropだけで差別を消したことにはしない(proxy対策)
 > (3)生命機会に影響する判断は人間確認を必須にする。詳細は本文。
-> Triggers: `(?i)\b(fairness|bias|demographic|subgroup|shap|xai|explainab|protected|disparate|equalized|parity)\b`.
 
 ## 事実
 
@@ -25,7 +49,7 @@
 要求し(第10条)、展開者への基本的権利影響評価(FRIA)も定める。
 fairness指標は相互に両立しないことが数学的に示されているため、
 「どの指標を選んだか、何を捨てたか」の文書化が実務上の最低要件になる。
-出典: Sjoding et al. (NEJM 2020)、EU AI Act(REGISTRY.ymlに記録)。
+出典: Sjoding et al. (NEJM 2020)、EU AI Act(sourcesに記録)。
 
 ## 禁止パターン
 
@@ -62,9 +86,6 @@ write_model_card(subgroup_metrics, intervals)  # リリース物に同梱する
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(fairlearn|shap|groupby\(.*(race|gender|age|sex)|fairness|subgroup)\b`
-  hit時は本節の存在をassert。
 - モデルリリースのチェックリストに「集団別表の添付」「指標選択の
   文書」を置く。担当: 実験レビュー役。
 

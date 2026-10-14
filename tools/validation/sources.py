@@ -1,4 +1,4 @@
-"""Declared-source URL collection: MANIFEST rows, section files, YAML data files."""
+"""Declared-source URL collection: section files and YAML data files."""
 
 from __future__ import annotations
 
@@ -9,12 +9,14 @@ from urllib.parse import urlparse
 import yaml
 
 from .const import (
-    ETHICS_HEADER_RE,
-    HEADER_SOURCES_RE,
-    SECTIONS,
     SECTION_GLOB,
+    SECTIONS,
     URL_RE,
 )
+from .frontmatter import split_front_matter
+
+# Generated / vocabulary files carry no `sources:` of their own.
+_NON_DATA_YAML = frozenset({"MANIFEST.yml", "VOCABULARY.yml"})
 
 
 def strip_url_punct(url: str) -> str:
@@ -22,20 +24,22 @@ def strip_url_punct(url: str) -> str:
     return url.rstrip(".,;:!?")
 
 
-def _split_header_body(text: str) -> tuple[str, str]:
-    """Split section text into (header sources blob, body after the header)."""
-    header_m = ETHICS_HEADER_RE.search(text)
-    if header_m is None:
-        return "", text
-    sources_m = HEADER_SOURCES_RE.search(header_m.group(1))
-    head = sources_m.group(1) if sources_m else ""
-    return head, text[header_m.end():]
+def _split_front_matter_sources(text: str) -> tuple[list[str], str]:
+    """Split section text into (front matter ``sources`` list, body)."""
+    try:
+        front, body = split_front_matter(text)
+    except yaml.YAMLError:
+        return [], text
+    sources = front.get("sources") if front else None
+    head = [s for s in sources if isinstance(s, str)] if isinstance(sources, list) else []
+    return head, body
 
 
 def extract_section_urls(text: str) -> list[str]:
-    """URLs declared by one .md section: header sources + body links."""
-    head, body = _split_header_body(text)
-    return [strip_url_punct(u) for u in URL_RE.findall(head) + URL_RE.findall(body)]
+    """URLs declared by one section file: front matter sources + body links."""
+    head, body = _split_front_matter_sources(text)
+    head_urls = [u for s in head for u in URL_RE.findall(s)]
+    return [strip_url_punct(u) for u in head_urls + URL_RE.findall(body)]
 
 
 def _collect_yaml_source_urls(node: object, found: list[str]) -> None:
@@ -68,18 +72,6 @@ def _add_source_urls(collected: dict[str, set[str]], origin: str, urls: Iterable
             collected.setdefault(origin, set()).add(url)
 
 
-def _manifest_source_urls(sections_dir: Path, collected: dict[str, set[str]]) -> None:
-    manifest_path = sections_dir / "MANIFEST.yml"
-    if not manifest_path.is_file():
-        return
-    with manifest_path.open(encoding="utf-8") as fh:
-        manifest = yaml.safe_load(fh) or {}
-    rows = manifest.get("sections", []) if isinstance(manifest, dict) else []
-    for row in rows or []:
-        if isinstance(row, dict) and isinstance(row.get("sources"), list):
-            _add_source_urls(collected, "MANIFEST.yml", [u for u in row["sources"] if isinstance(u, str)])
-
-
 def _section_file_source_urls(sections_dir: Path, collected: dict[str, set[str]]) -> None:
     for path in sorted(sections_dir.glob(SECTION_GLOB)):
         _add_source_urls(collected,
@@ -90,7 +82,7 @@ def _section_file_source_urls(sections_dir: Path, collected: dict[str, set[str]]
 def _yaml_data_source_urls(sections_dir: Path, collected: dict[str, set[str]]) -> None:
     for pattern in ("*.yml", "*.yaml"):
         for path in sorted(sections_dir.rglob(pattern)):
-            if path.name == "MANIFEST.yml":
+            if path.name in _NON_DATA_YAML:
                 continue
             with path.open(encoding="utf-8") as fh:
                 doc = yaml.safe_load(fh)
@@ -102,14 +94,12 @@ def _yaml_data_source_urls(sections_dir: Path, collected: dict[str, set[str]]) -
 def collect_source_urls(sections_dir: Path = SECTIONS) -> dict[str, list[str]]:
     """Map relative file path -> sorted unique declared source URLs.
 
-    Covers MANIFEST.yml rows (optional ``sources:``), every
-    ``sections/*/*.md`` (header ``sources=[...]`` + body links),
+    Covers every ``sections/*/*.md`` (front matter ``sources:`` + body links)
     and sibling YAML data files (any ``sources:`` list, e.g.
     ``lang/copyright-terms.yml``). Reads files only; never touches
     the network.
     """
     collected: dict[str, set[str]] = {}
-    _manifest_source_urls(sections_dir, collected)
     _section_file_source_urls(sections_dir, collected)
     _yaml_data_source_urls(sections_dir, collected)
     return {origin: sorted(urls) for origin, urls in sorted(collected.items())}

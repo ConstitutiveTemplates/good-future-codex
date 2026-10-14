@@ -1,17 +1,44 @@
-{# ethics: id=baseline-pqc-fips version=2026-09-21.1 status=active
-   triggers=["pqc","fips","tls","rsa","ecdh","ecdsa","kyber","ml-kem"]
-   sources=["https://www.nist.gov/news-events/news/2024/08/nist-releases-first-3-finalized-post-quantum-encryption-standards", "https://csrc.nist.gov/pubs/fips/203/final", "https://csrc.nist.gov/pubs/fips/204/final", "https://csrc.nist.gov/pubs/fips/205/final", "https://csrc.nist.gov/pubs/ir/8547/ipd"] #}
+---
+id: baseline-pqc-fips
+version: "2026-09-21.1"
+status: active
+placement: agents_md
+when: [library, cli, web_api]
+obligations:
+  - obligation.crypto.no-deprecated-algorithms
+triggers:
+  keywords: ["pqc", "fips", "tls", "rsa", "ecdh", "ecdsa", "kyber", "ml-kem"]
+  pattern: '(?i)\b(ml-kem|ml-dsa|slh-dsa|kyber|dilithium|sphincs|fips\s?20[345]|rsa|ecdh|ecdsa|ed25519|tls|ssl|kem|cipher|pqc|post-quantum)\b'
+  config: '(?i)\b(ml-kem|ml-dsa|slh-dsa|kyber|dilithium|sphincs|fips\s?20[345]|rsa|ecdh|ecdsa|tls)\b'
+sources:
+  - https://www.nist.gov/news-events/news/2024/08/nist-releases-first-3-finalized-post-quantum-encryption-standards
+  - https://csrc.nist.gov/pubs/fips/203/final
+  - https://csrc.nist.gov/pubs/fips/204/final
+  - https://csrc.nist.gov/pubs/fips/205/final
+  - https://csrc.nist.gov/pubs/ir/8547/ipd
+license: CC-BY-4.0
+en:
+  title: "PQC standards — choose ML-KEM/ML-DSA and hybrids for new cryptography"
+  summary:
+    - "Use the standard names (ML-KEM, ML-DSA, SLH-DSA), not submission names such as Kyber."
+    - "Key establishment uses ML-KEM; signatures default to ML-DSA with SLH-DSA as the conservative alternative; do not mix the roles."
+    - "Migrate via hybrids (X25519MLKEM768, ...); do not adopt classical algorithms alone in new designs."
+  prohibited:
+    - "RSA key transport (RSA/ECB/PKCS1Padding, ...), ECDH-only key agreement or RSA/ECDSA-only signatures in new code."
+    - "New use of submission names (kyber768, dilithium3, ...) in settings or identifiers."
+    - "Mixing roles (signing with a KEM, key agreement with a signature algorithm)."
+    - "Making SLH-DSA the default (bandwidth and certificate-size cost; keep it for conservative uses)."
+    - "Encrypting long-lived data or issuing long-lived tokens/certificates with a quantum-vulnerable algorithm alone."
+---
 # PQC標準 — 新規の暗号選択はML-KEM/ML-DSA系・ハイブリッドで行う
 
 > **適用条件**: TLS・鍵交換・署名・証明書・JWT・VPNなど暗号プリミティブを
 > 新規に選択・実装・設定する場面すべて。保守で暗号まわりを触る時も含む。
 > 規模: 世界問題(旧暗号は今も全世界で書かれ、被害は保存データとして長期化する)。
-> 配布: library / cli / web(TLS・暗号を実装するもの)。
 > 要約: (1)標準名で呼ぶ(ML-KEM/ML-DSA/SLH-DSA。応募名Kyber等を新規に使わない)
 > (2)鍵共有はKEM=ML-KEM、署名はML-DSAが既定・SLH-DSAは保守的代替と役割を混ぜない
 > (3)移行はハイブリッド(X25519MLKEM768等)で行い、旧暗号単独の新規採用をしない。
 > 詳細は本文。
-> Triggers: `(?i)\b(ml-kem|ml-dsa|slh-dsa|kyber|dilithium|sphincs|fips\s?20[345]|rsa|ecdh|ecdsa|ed25519|tls|ssl|kem|cipher|pqc|post-quantum)\b`.
 
 ## 事実
 
@@ -27,7 +54,7 @@ NIST IR 8547はRSA-2048・ECDH-P256等の112bit安全性を2030年までにdepre
 2035年までにdisallowedとする移行目標を示した。長期秘匿データは
 「今盗聴→後で量子解読」(harvest now, decrypt later)の対象になるため、
 移行期限は保存データの秘匿が必要な期間から逆算する。
-出典: NIST FIPS 203/204/205・IR 8547(REGISTRY.ymlに記録)。
+出典: NIST FIPS 203/204/205・IR 8547(sourcesに記録)。
 
 ## 禁止パターン
 
@@ -65,9 +92,6 @@ group = X25519MLKEM768                  # TLS のハイブリッド群(OpenSSL 3
 - 暗号資産棚卸し(どの鍵長・アルゴリズムがどこで使われているか)を版管理し、
   IR 8547の2030/2035里程碑に照らした削除計画を持つ。担当: 依存管理と同じ
   レビュー役(単独では回らない)。
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(ml-kem|ml-dsa|slh-dsa|kyber|dilithium|sphincs|fips\s?20[345]|rsa|ecdh|ecdsa|tls)\b`
-  hit時は本節の存在をassert。
 - JWT・mTLS・VPN等のプロファイルごとに移行可否を確認する。標準団体の
   プロファイル更新待ちの箇所は「待ち」と明示して無理に繋がない。
 

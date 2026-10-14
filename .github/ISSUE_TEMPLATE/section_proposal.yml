@@ -7,11 +7,11 @@ body:
     attributes:
       value: |
         Thanks for proposing a section. Sections live in
-        `sections/<tier>/<slug>.md`, start as `status=draft`, and must
-        pass `just check` (`tools/validate.py`): header id matches the
-        MANIFEST row and the `<tier>-<slug>` path name, body is
-        flag-agnostic, and 制度変更ウォッチ carries at least one
-        `(review_by: YYYY-MM-DD)` date. See CONTRIBUTING.md.
+        `sections/<tier>/<slug>.md`, start as `status: draft`, and must
+        pass `just check` (`tools/validate.py`): the YAML front matter id
+        matches the `<tier>-<slug>` path name, the body is
+        consumer-agnostic, and the generated MANIFEST is in sync
+        (`just manifest`). See CONTRIBUTING.md.
   - type: dropdown
     id: tier
     attributes:

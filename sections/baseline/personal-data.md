@@ -1,6 +1,36 @@
-{# ethics: id=baseline-personal-data version=2026-10-15.1 status=active
-   triggers=["pii","personal","gdpr","privacy","user_data","deletion"]
-   sources=["https://eur-lex.europa.eu/eli/reg/2016/679/oj", "https://www.ppc.go.jp/personalinfo/legal/", "https://oag.ca.gov/privacy/ccpa"] #}
+---
+id: baseline-personal-data
+version: "2026-10-15.1"
+status: active
+placement: agents_md
+when: [personal_data, face_recognition, medtech]
+obligations:
+  - obligation.privacy.external-transmission-declared
+  - obligation.privacy.no-cleartext-pii-logging
+triggers:
+  keywords: ["pii", "personal", "gdpr", "privacy", "user_data", "deletion"]
+  pattern: '(?i)\b(pii|personal[_ ]?data|personal[_ ]?information|gdpr|privacy|user[_ ]?data|deletion|right[_ ]?to[_ ]?erasure|consent|retention)\b'
+  config: '(?i)\b(pii|personal_data|gdpr|privacy|delete_account|right_to_erasure|scrub|redact)\b'
+sources:
+  - https://eur-lex.europa.eu/eli/reg/2016/679/oj
+  - https://www.ppc.go.jp/personalinfo/legal/
+  - https://oag.ca.gov/privacy/ccpa
+license: CC-BY-4.0
+en:
+  title: "Personal data — minimise before collecting, and build the deletion path first"
+  summary:
+    - "Ask whether each item is needed before collecting it; default to the minimum."
+    - "Include deletion and correction paths in the initial design; retrofitting is expensive."
+    - "Know what leaves the process (error trackers, cloud, external APIs) and reduce it before it leaves."
+  prohibited:
+    - "Collection without a defined purpose ('we might use it later')."
+    - "Logs that keep request bodies, query strings or IPs by default with no retention period."
+    - "No real deletion path (logical delete only, or copies left in backups, derived tables, caches, search indexes)."
+    - "Sending personal data unconditionally to third parties (error trackers, analytics, LLM APIs)."
+    - "Logging passwords, tokens or API keys."
+    - "Automated decisions without a record of inputs, model version and output."
+    - "Copying production data into development environments without anonymisation."
+---
 # 個人データ — 集める前に最小化し、消せる経路を先に作る
 
 > **適用条件**: 識別できる人に関するデータ(アカウント、連絡先、注文、
@@ -9,13 +39,10 @@
 > 自動的に判断を下す場合(評価・順位付け・承認・審査・照合)も本節の
 > 対象で、その場合は人間の関与と説明可能性が加わる。
 > 規模: 世界問題(データは国境を越えて流れ、法域ごとに要件が重なる)。
-> 配布: library / cli / script / web / data-science / kaggle / mcp
-> (個人データを扱うもの。種別ではなく用途で選ぶ)。
 > 要約: (1)集める前に「これは必要か」を問い、既定を最小にする
 > (2)削除・訂正の経路を初期設計に含める(後付けは高くつく)
 > (3)プロセスを出るもの(Sentry・クラウド・外部API)を把握し、
 > 出る前に減らす。詳細は本文。
-> Triggers: `(?i)\b(pii|personal[_ ]?data|personal[_ ]?information|gdpr|privacy|user[_ ]?data|deletion|right[_ ]?to[_ ]?erasure|consent|retention)\b`.
 
 ## 事実
 
@@ -35,7 +62,7 @@ EUのGDPR(2016/679、2018-05-25適用)は、個人データを「識別され
 リクエストボディ、クラウドのアクセスログ、LLM APIへ送ったプロンプトは、
 いずれも処理に当たる。設計時に把握していない送信経路が、事後に
 最大の負債になる。出典: GDPR、個人情報保護法、CCPA/CPRA
-(REGISTRY.ymlに記録)。
+(sourcesに記録)。
 
 ## 禁止パターン
 
@@ -84,9 +111,7 @@ async def log_request_good(request, user_id):
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(pii|personal_data|gdpr|privacy|delete_account|right_to_erasure|scrub|redact)\b`
-  hit時は本節の存在をassertし、送信先の列挙と削除経路の有無を確認する。
+- 設定側トリガー(front matter の `triggers.config`)に当たったら、送信先の列挙と削除経路の有無を確認する。
 - リリース判定に「新しい個人データ項目の追加はないか」「新しい
   送信先はないか」を必須項目として置く。担当: データ保護のレビュー役。
 

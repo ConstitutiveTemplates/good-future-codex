@@ -1,6 +1,33 @@
-{# ethics: id=sector-samd-regulatory version=2026-10-15.1 status=active
-   triggers=["samd","pmda","fda","pccp","clinical","diagnosis"]
-   sources=["https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial-intelligence", "https://eur-lex.europa.eu/eli/reg/2017/745/oj", "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"] #}
+---
+id: sector-samd-regulatory
+version: "2026-10-15.1"
+status: active
+placement: agents_md
+when: medtech
+obligations:
+  - obligation.ai.samd-clinical-evaluation
+triggers:
+  keywords: ["samd", "pmda", "fda", "pccp", "clinical", "diagnosis"]
+  pattern: '(?i)\b(samd|pmda|fda|pccp|idaten|clinical|diagnos|medical|patient|mdr|ce\s?mark|medical\s?device)\b'
+  config: '(?i)\b(patient|clinical|diagnos|pmda|fda|medical)\b'
+sources:
+  - https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial-intelligence
+  - https://eur-lex.europa.eu/eli/reg/2017/745/oj
+  - https://eur-lex.europa.eu/eli/reg/2024/1689/oj
+license: CC-BY-4.0
+en:
+  title: "Medical SaMD — continuous learning stays inside approved change limits, and humans make the call"
+  summary:
+    - "Do not swap production models outside an approved change plan (PCCP, IDATEN, ...)."
+    - "Default to a structure where a human (clinician) makes the final decision."
+    - "Build performance-drift monitoring and post-market surveillance into the initial design."
+  prohibited:
+    - "Automatic retraining or production model swaps outside the approved scope (updates not in the change plan)."
+    - "Diagnoses or treatment decisions finalised automatically without clinician review."
+    - "Operating without performance-drift monitoring."
+    - "Clinical reliance on unexplained output (scores shown without supporting evidence)."
+    - "Designing regulatory requirements to be 'added later' (model management with no audit log or versioning)."
+---
 # 医療SaMD — 継続学習は承認済み変更限界の中で、判断は人間と共に
 
 > **適用条件**: 診断・治療支援・患者スクリーニング等の医療用途に
@@ -8,12 +35,9 @@
 > 設計・学習・更新する場面。
 > 規模: 世界問題(患者は法域を問わず被り、規制は日米欧が足並みを
 > 揃えつつある)。
-> 配布: data-science / web / cli / mcp(医療診断・治療支援に触れるもの。
-> 用途で選ぶのであって、種別では決まらない)。
 > 要約: (1)承認された変更計画(PCCP/IDATEN等)の範囲外で本番モデルを
 > 差し替えない (2)最終判断は人間(医師等)が行う構造を既定にする
 > (3)性能ドリフトの監視と市販後監視を初期設計に含める。詳細は本文。
-> Triggers: `(?i)\b(samd|pmda|fda|pccp|idaten|clinical|diagnos|medical|patient|mdr|ce\s?mark|medical\s?device)\b`.
 
 ## 事実
 
@@ -30,7 +54,7 @@ CE適合性評価と市販後監視(PMS)が必要になる。AI Actの高リス�
 延期され、単体の高リスク(附属書III)は2027-12-02、他の規制対象製品
 (医療機器等、附属書I)に組み込まれる高リスクシステムは2028-08-02から
 適用となる。
-出典: FDA PCCPガイダンス、EUR-Lex(MDR/AI Act)(REGISTRY.ymlに記録)。
+出典: FDA PCCPガイダンス、EUR-Lex(MDR/AI Act)(sourcesに記録)。
 
 ## 禁止パターン
 
@@ -73,9 +97,7 @@ if not pccp_allows(eval_on_locked_suite(candidate_model)):
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(patient|clinical|diagnos|pmda|fda|medical)\b`
-  hit時は本節の存在をassertし、専門家レビューの要否を確認する。
+- 設定側トリガー(front matter の `triggers.config`)に当たったら、専門家レビューの要否を確認する。
 - リリース判定に「変更は承認済み変更計画の範囲内か」を必須項目として
   置く。担当: 品質/規制対応のレビュー役。
 

@@ -1,33 +1,41 @@
 #!/usr/bin/env python3
 """Validate the kanon sections corpus.
 
-Real section shape (sections/<tier>/<slug>.md):
+Section shape (sections/<tier>/<slug>.md):
 
-    {# ethics: id=<tier>-<slug> version=<YYYY-MM-DD.rev> status=<draft|active>
-       triggers=["kw", ...] #}
+    ---
+    id: <tier>-<slug>
+    version: "YYYY-MM-DD.rev"
+    status: draft | active
+    placement: agents_md | charter | legal_md | standalone
+    when: <condition> | [<condition>, ...]      # sections/VOCABULARY.yml
+    obligations: [obligation.<category>.<slug>, ...]   # law-map ids
+    triggers: {keywords: [...], pattern: '<regex>', config: '<regex>'}
+    sources: [https://..., ...]
+    license: CC-BY-4.0
+    en: {title: ..., summary: [...], prohibited: [...]}
+    ---
     # <title>
     > **適用条件**: ...
     ## 事実 ... ## 禁止パターン ... ## 推奨設定 ... ## 運用チェック ...
-    ## 制度変更ウォッチ  (contains (review_by: YYYY-MM-DD) dates)
+    ## 制度変更ウォッチ  (may contain (review_by: YYYY-MM-DD) dates)
 
 Checks (all errors are collected; exit 1 if any, else 0):
 
-  * every ``sections/<tier>/<slug>.md`` appears in MANIFEST
-    ``sections[].file`` and vice versa
-  * every file opens with an ``{# ethics: ... #}`` header carrying
-      - id        equals the MANIFEST id AND ``<tier>-<slug>`` derived from
-                  the file path (``region/eu-cra.md`` -> ``region-eu-cra``)
-      - version   ``YYYY-MM-DD.rev``
-      - status    draft | active
-      - triggers  a non-empty string list
-  * MANIFEST ``when`` / ``placement`` values stay in the documented vocabulary
-  * section bodies are flag-agnostic: no ``{{`` / ``{%`` jinja expressions
-    after the ethics header
+  * every file opens with YAML front matter carrying exactly the keys above;
+    id equals ``<tier>-<slug>`` from the path; version/status/placement/when
+    stay in the vocabulary; trigger regexes compile; en has a title and
+    non-empty summary/prohibited lists
+  * bodies are consumer-agnostic: no ``{{`` / ``{%`` template expressions and
+    no banned phrases (consumer internals, distribution/Triggers lines that
+    belong in front matter, retired project names)
   * every section keeps the required headings in order
     (## 事実 / ## 禁止パターン / ## 推奨設定 / ## 運用チェック / ## 制度変更ウォッチ)
-  * every section carries at least one ``(review_by: YYYY-MM-DD)`` date in the
-    制度変更ウォッチ block; expired dates are errors, due < 30d are warnings
-  * section ids are unique (MANIFEST and files)
+  * review_by dates that are present must not be expired (due < 30d warns);
+    a section with no law-map ``obligations`` must carry at least one
+  * section ids are unique
+  * sections/MANIFEST.yml and the README/CONTRIBUTING vocabulary tables
+    match what tools/manifest.py generates
 
 Run:  uv run --with pyyaml python tools/validate.py
       uv run --with pyyaml python tools/validate.py --drift
@@ -57,21 +65,17 @@ import yaml
 
 from validation.cli import main, print_validation_report
 from validation.const import (
+    BANNED_PHRASES,
     CURL_STATUS_RE,
-    ETHICS_HEADER_RE,
     FLAGGED_STATUS_PREFIXES,
-    HEADER_ID_RE,
-    HEADER_SOURCES_RE,
-    HEADER_STATUS_RE,
-    HEADER_TRIGGERS_RE,
-    HEADER_VERSION_RE,
+    FRONT_MATTER_KEYS,
+    FRONT_MATTER_RE,
     HEAD_FALLBACK_CODES,
     JINJA_RE,
     MANIFEST,
     NO_HTTP_STATUS_MARKER,
     OBLIGATIONS_SUBDIR,
     OPEN_LAW_SOURCES_SUBDIR,
-    PLACEMENT_VOCAB,
     REDIRECT_STATUS_PREFIX,
     REPO,
     REQUIRED_HEADINGS,
@@ -79,13 +83,13 @@ from validation.const import (
     REVIEW_HORIZON,
     SECTIONS,
     SECTION_GLOB,
+    SECTION_LICENSE,
     SOURCE_RETRIES,
     SOURCE_TIMEOUT,
     SOURCE_USER_AGENT,
-    STATUS_VOCAB,
     UNAVAILABLE_MARKER,
     URL_RE,
-    WHEN_VOCAB,
+    VOCABULARY,
     ProbeFn,
     RunnerFn,
     SourceFlag,
@@ -93,16 +97,19 @@ from validation.const import (
     warnings,
 )
 from validation.corpus import (
+    check_banned_phrases,
     check_flag_agnostic,
+    check_front_matter,
     check_headings,
     check_review_by,
     expected_id,
-    load_manifest,
-    parse_header,
     section_files,
     validate_corpus,
     validate_section_files,
 )
+from validation.frontmatter import read_section, split_front_matter
+from validation.manifest import build_manifest, render_manifest
+from validation.vocabulary import load_vocabulary, when_vocab
 from validation.liveness import (
     check_sources,
     drift_report,
@@ -123,78 +130,61 @@ from validation.sources import (
 from validation.upstream import check_upstream_project_status
 
 __all__ = [
+    "BANNED_PHRASES",
     "CURL_STATUS_RE",
-    "ETHICS_HEADER_RE",
     "FLAGGED_STATUS_PREFIXES",
-    "HEADER_ID_RE",
-    "HEADER_SOURCES_RE",
-    "HEADER_STATUS_RE",
-    "HEADER_TRIGGERS_RE",
-    "HEADER_VERSION_RE",
+    "FRONT_MATTER_KEYS",
+    "FRONT_MATTER_RE",
     "HEAD_FALLBACK_CODES",
     "JINJA_RE",
     "MANIFEST",
     "NO_HTTP_STATUS_MARKER",
     "OBLIGATIONS_SUBDIR",
     "OPEN_LAW_SOURCES_SUBDIR",
-    "PLACEMENT_VOCAB",
+    "ProbeFn",
     "REDIRECT_STATUS_PREFIX",
     "REPO",
     "REQUIRED_HEADINGS",
     "REVIEW_BY_RE",
     "REVIEW_HORIZON",
+    "RunnerFn",
     "SECTIONS",
     "SECTION_GLOB",
+    "SECTION_LICENSE",
     "SOURCE_RETRIES",
     "SOURCE_TIMEOUT",
     "SOURCE_USER_AGENT",
-    "STATUS_VOCAB",
+    "SourceFlag",
     "UNAVAILABLE_MARKER",
     "URL_RE",
-    "WHEN_VOCAB",
-    "ProbeFn",
-    "RunnerFn",
-    "SourceFlag",
-    "errors",
-    "warnings",
+    "VOCABULARY",
+    "check_banned_phrases",
     "check_flag_agnostic",
+    "check_front_matter",
     "check_headings",
     "check_review_by",
     "check_sources",
-    "check_upstream_project_status",
     "collect_source_urls",
-    "curl_args",
     "drift_report",
-    "error",
+    "errors",
     "expected_id",
     "extract_section_urls",
     "extract_yaml_sources",
     "flagged_unique_count",
     "format_source_summary",
     "is_flagged_status",
-    "load_manifest",
-    "main",
-    "parse_curl_status",
-    "parse_header",
     "print_source_summary",
-    "print_validation_report",
-    "probe_source",
-    "reset",
     "run_sources_check",
     "section_files",
     "strip_url_punct",
     "validate_corpus",
     "validate_section_files",
-    "warn",
+    "warnings",
 ]
 
 # Back-compat: the pre-split module exposed these private helpers, so keep
 # them importable (without advertising them in __all__).
-from validation.corpus import (  # noqa: E402
-    _validate_manifest_rows,
-    _validate_section_file,
-    _validate_section_files,
-)
+from validation.corpus import _validate_section_file  # noqa: E402
 from validation.liveness import (  # noqa: E402
     _format_source_line,
     _is_flagged_with_grounding,
@@ -207,9 +197,8 @@ from validation.probe import _run_curl  # noqa: E402
 from validation.sources import (  # noqa: E402
     _add_source_urls,
     _collect_yaml_source_urls,
-    _manifest_source_urls,
     _section_file_source_urls,
-    _split_header_body,
+    _split_front_matter_sources,
     _yaml_data_source_urls,
 )
 from validation.upstream import (  # noqa: E402

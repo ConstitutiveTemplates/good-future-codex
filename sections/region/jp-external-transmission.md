@@ -1,18 +1,42 @@
-{# ethics: id=region-jp-external-transmission version=2026-09-18.1 status=draft
-   triggers=["cookie","consent","gtm","analytics","optout","tracking"]
-   sources=["https://laws.e-gov.go.jp/law/404AC0000000086"] #}
+---
+id: region-jp-external-transmission
+version: "2026-09-18.1"
+status: draft
+placement: agents_md
+when: jp
+obligations:
+  - obligation.privacy.external-transmission-declared
+triggers:
+  keywords: ["cookie", "consent", "gtm", "analytics", "optout", "tracking"]
+  pattern: '(?i)\b(cookie|consent|gtm|gtag|analytics|opt-?out|tracker|advertis|sdk|tag manager)\b'
+  config: '(?i)\b(gtm|gtag|analytics|cookie|consent|tracking)\b'
+sources:
+  - https://laws.e-gov.go.jp/law/404AC0000000086
+license: CC-BY-4.0
+en:
+  title: "Japan external transmission rules — disclose third-party sends from Japan-facing front ends in advance"
+  summary:
+    - "Publish in plain Japanese, in advance, what is sent, to which company, and for what purpose."
+    - "Keep the disclosure legible (text size, contrast)."
+    - "Separate out sends made at the user's request (e.g. authentication) under the exemption, with documented grounds."
+  prohibited:
+    - "Installing tags wholesale without notice or consent (a tag manager opened up for analytics and ads)."
+    - "Illegible disclosure (unreadably small text, low contrast, buried deep on another page)."
+    - "Jargon-only explanations ('identifiers are sent' without saying what information)."
+    - "Vague recipients only ('advertising partners, etc.' with no company names or link to details)."
+    - "No way to opt out (consent screens with no refusal option)."
+    - "Claiming the exemption without grounds ('it is an auth cookie, so no disclosure' with nothing recorded)."
+---
 # 外部送信規律 — 日本向けフロントエンドのサードパーティ送信は事前開示を
 
 > **適用条件**: 日本の利用者を対象にWebサイト・アプリを提供し、
 > アクセス解析・広告・サードパーティタグ/SDK・Cookie等で
 > 利用者端末から外部へ情報を自動送信させる場面。
 > 規模: 国内問題(規制も利用者の被害も日本国内に閉じる)。
-> 配布: webのみ(フロントエンド・タグ管理を持つもの)。
 > 要約: (1)送信情報・送信先事業者・利用目的を平易な日本語で事前公表
 > (2)文字サイズ・コントラスト等の視認性を確保する
 > (3)本人の要求に基づく送信(認証等)は適用除外を根拠付きで切り分ける。
 > 詳細は本文。
-> Triggers: `(?i)\b(cookie|consent|gtm|gtag|analytics|opt-?out|tracker|advertis|sdk|tag manager)\b`.
 
 ## 事実
 
@@ -28,7 +52,7 @@
 (一覧+詳細)が認められ、送信先の名称を略称とし詳細への遷移で
 足し合わせる形もガイドライン改定で整理されている。
 出典: 電気通信事業法(e-Gov法令検索)、総務省ガイドブック
-(REGISTRY.ymlに記録。ガイドブック最新版は一次で確認)。
+(sourcesに記録。ガイドブック最新版は一次で確認)。
 
 ## 禁止パターン
 
@@ -57,9 +81,6 @@
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(gtm|gtag|analytics|cookie|consent|tracking)\b`
-  hit時は本節の存在をassert。
 - タグ/SDK追加時のレビュー項目に「開示表の行追加」を置く。
   担当: フロントエンドのレビュー役。
 

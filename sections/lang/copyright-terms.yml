@@ -1,9 +1,8 @@
 # Copyright protection terms per jurisdiction -- the structured-data half of
-# _shared/ethics/baseline/copyright-ai.md (its 事実 paragraph states the
+# sections/baseline/copyright-ai.md (its 事実 paragraph states the
 # differences in prose; this table is what a public-domain checker reads).
-# Same lifecycle as the section it serves: review_by matches the
-# baseline-copyright-ai registry row, and the table is dev-side only -- the
-# generated AGENTS.md appendix carries the section's summary, not this file.
+# Same lifecycle as the section it serves (`serves:` below), and the table is
+# data, not prose -- consumers render the section's summary, not this file.
 # Sources point at the statute or the national office, not at secondary
 # summaries. This is not legal advice; expert review required.
 version: 1

@@ -1,19 +1,42 @@
-{# ethics: id=baseline-license-drift version=2026-09-21.1 status=active
-   triggers=["license","bsl","sspl","copyleft","gpl","terraform"]
-   sources=["https://www.hashicorp.com/blog/terraform-is-now-source-available", "https://opentofu.org/faq/"] #}
+---
+id: baseline-license-drift
+version: "2026-09-21.1"
+status: active
+placement: agents_md
+when: always
+obligations:
+  - obligation.licensing.no-copyleft-contamination
+  - obligation.security.sbom-and-vulnerability-handling
+triggers:
+  keywords: ["license", "bsl", "sspl", "copyleft", "gpl", "terraform"]
+  pattern: '(?i)\b(licen[cs]e|bsl|busl|sspl|rsal|elv2|copyleft|gpl|agpl|lgpl|terraform|opentofu|elasticsearch|redis|source-available)\b'
+  config: '(?i)\b(BUSL|SSPL|RSAL|ELv2|licen[cs]e)\b'
+sources:
+  - https://www.hashicorp.com/blog/terraform-is-now-source-available
+  - https://opentofu.org/faq/
+license: CC-BY-4.0
+en:
+  title: "License drift — track each dependency's current license and keep BSL/SSPL out"
+  summary:
+    - "Check the current license when adding a dependency and match it against an allowlist."
+    - "Do not let source-available licenses such as BSL/SSPL in without review."
+    - "When a project forks (Terraform to OpenTofu, ...), move to the legitimate successor."
+  prohibited:
+    - "Adding dependencies without a license check (source-available BSL/SSPL/RSAL/ELv2, or missed strong copyleft)."
+    - "Confusing fork origin and fork (e.g. listing upstream Terraform as MPL 2.0, or OpenTofu as BUSL)."
+    - "Pinning old versions on the assumption 'it was OSS when we added it' without re-checking licenses on updates."
+    - "Fabricated license statements in README or NOTICE that do not match reality."
+---
 # ライセンス変動 — 依存の現行ライセンスを追跡し、BSL/SSPL混入を防ぐ
 
 > **適用条件**: 依存パッケージ・ツールチェーン・コンテナイメージを
 > 追加・更新する場面すべて。フォーク元が非OSS化した事例の引用も含む。
 > 規模: 世界問題(ライセンス変更はどの法域でも起き、汚染は世界の
 > リポジトリに広がる)。
-> 配布: library / cli / script / web / data-science(依存を1つでも
-> 持つ全プロジェクト種別)。
 > 要約: (1)追加時に現行ライセンスを確認し、allowlistと照合する
 > (2)BSL/SSPL等のソース可用ライセンスを確認なしで混入させない
 > (3)フォーク移行(Terraform→OpenTofu等)は正当な後継を通す。
 > 詳細は本文。
-> Triggers: `(?i)\b(licen[cs]e|bsl|busl|sspl|rsal|elv2|copyleft|gpl|agpl|lgpl|terraform|opentofu|elasticsearch|redis|source-available)\b`.
 
 ## 事実
 
@@ -27,7 +50,7 @@ BSL適用後コードの不正利用を主張する書簡を送付し、OpenTofu
 つまり依存のライセンスは「追加時点の記憶」では正しくなく、
 リポジトリ単位で変動する。BUSL自体は発行からChange Date(原則4年)経過で
 指定ライセンスへ切り替わるため、版ごとに扱いが変わる点にも注意する。
-出典: HashiCorp公式ブログ、OpenTofu FAQ(REGISTRY.ymlに記録)。
+出典: HashiCorp公式ブログ、OpenTofu FAQ(sourcesに記録)。
 
 ## 禁止パターン
 
@@ -65,9 +88,6 @@ BSL適用後コードの不正利用を主張する書簡を送付し、OpenTofu
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(BUSL|SSPL|RSAL|ELv2|licen[cs]e)\b`
-  hit時は本節の存在をassert。
 - 依存のライセンス棚卸しを半期に一度、pyproject/lockの差分レビューで
   実施する。担当: 依存管理と同じレビュー役。
 

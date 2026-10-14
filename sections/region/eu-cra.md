@@ -1,6 +1,34 @@
-{# ethics: id=region-eu-cra version=2026-10-04.1 status=active
-   triggers=["cra","sbom","vulnerability","cve","incident","resilience"]
-   sources=["https://eur-lex.europa.eu/eli/reg/2024/2847/oj", "https://digital-strategy.ec.europa.eu/en/policies/cra-reporting"] #}
+---
+id: region-eu-cra
+version: "2026-10-04.1"
+status: active
+placement: agents_md
+when: commercial
+obligations:
+  - obligation.security.coordinated-vulnerability-disclosure
+  - obligation.security.sbom-and-vulnerability-handling
+triggers:
+  keywords: ["cra", "sbom", "vulnerability", "cve", "incident", "resilience"]
+  pattern: '(?i)\b(cra|sbom|cyclonedx|vulnerability|vulnerabilities|cve|incident[_ ]?report|resilience|enisa)\b'
+  config: '(?i)\b(sbom|cyclonedx|vulnerability_report|security_txt|incident_report|cra_)\b'
+sources:
+  - https://eur-lex.europa.eu/eli/reg/2024/2847/oj
+  - https://digital-strategy.ec.europa.eu/en/policies/cra-reporting
+license: CC-BY-4.0
+en:
+  title: "EU CRA — vulnerability reporting and SBOMs are no longer optional for commercial software"
+  summary:
+    - "Report actively exploited vulnerabilities within 24 hours of becoming aware."
+    - "Produce an SBOM so you can account for where every dependency came from."
+    - "State the support period and ship security updates throughout it."
+  prohibited:
+    - "Shipping a product with no vulnerability disclosure contact."
+    - "No SBOM and no way to say which version of which library is bundled."
+    - "Offering a product without deciding its support period."
+    - "Assuming the open-source exemption still applies after commercialisation (misreading Article 24)."
+    - "Holding the report until a fix exists (the 24-hour early warning does not wait for a fix)."
+    - "Not monitoring dependency vulnerabilities continuously (e.g. pip-audit not in CI)."
+---
 # EU CRA — 商用ソフトの脆弱性報告とSBOMは、もう任意ではない
 
 > **適用条件**: ソフトウェアを EU 市場に提供する(販売・有償サービス・
@@ -8,12 +36,10 @@
 > 時点で対象になる。社内利用のみ、非商用の公開は対象外。
 > 規模: 地域問題(義務は EU 市場に提供する製造者に課され、
 > 域外の開発者も対象になる)。
-> 配布: 商用配布される全種別(web / cli / library / mcp ほか)。
 > 要約: (1)脆弱性の能動的悪用を知ったら24時間以内に報告する
 > (2)SBOM(部品表)を作り、依存の出所を説明できるようにする
 > (3)サポート期間を明示し、その間はセキュリティ更新を出す。
 > 詳細は本文。
-> Triggers: `(?i)\b(cra|sbom|cyclonedx|vulnerability|vulnerabilities|cve|incident[_ ]?report|resilience|enisa)\b`.
 
 ## 事実
 
@@ -35,7 +61,7 @@ EU のサイバーレジリエンス規則(Cyber Resilience Act、規則 (EU) 20
 外にあるが、商業活動として提供された場合は対象に戻る。第二に、
 **報告義務は既に発動しており、市場に置いた時期を問わない**。2027年まで
 猶予があるという理解は誤りで、2026-09-11 以降に悪用を認識した時点で
-報告義務が生じる。出典: 規則 (EU) 2024/2847(REGISTRY.ymlに記録)。
+報告義務が生じる。出典: 規則 (EU) 2024/2847(sourcesに記録)。
 
 ## 禁止パターン
 
@@ -74,9 +100,7 @@ EU のサイバーレジリエンス規則(Cyber Resilience Act、規則 (EU) 20
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(sbom|cyclonedx|vulnerability_report|security_txt|incident_report|cra_)\b`
-  hit時は本節の存在をassertし、SBOM 生成と報告手順の有無を確認する。
+- 設定側トリガー(front matter の `triggers.config`)に当たったら、SBOM 生成と報告手順の有無を確認する。
 - リリース判定に「SBOM が添付されているか」「サポート期間が明示されて
   いるか」を必須項目として置く。担当: リリース責任者。
 

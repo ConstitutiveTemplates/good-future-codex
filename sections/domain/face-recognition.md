@@ -1,6 +1,36 @@
-{# ethics: id=domain-face-recognition version=2026-10-15.1 status=active
-   triggers=["face","facial","biometric","recognition","bipa","liveness"]
-   sources=["https://www.nist.gov/publications/face-recognition-vendor-test-part-3-demographic-effects", "https://eur-lex.europa.eu/eli/reg/2024/1689/oj", "https://web.archive.org/web/20250630192313/https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=3004", "https://eur-lex.europa.eu/eli/reg/2016/679/oj"] #}
+---
+id: domain-face-recognition
+version: "2026-10-15.1"
+status: active
+placement: agents_md
+when: face_recognition
+obligations:
+  - obligation.ai.biometric-identification-gated
+triggers:
+  keywords: ["face", "facial", "biometric", "recognition", "bipa", "liveness"]
+  pattern: '(?i)\b(face|facial|biometric|biometrics|faceid|face_id|liveness|deepfake|recognition|arcface|insightface|retinaface)\b'
+  config: '(?i)\b(face|facial|biometric|liveness|arcface|insightface|retinaface|deepface)\b'
+sources:
+  - https://www.nist.gov/publications/face-recognition-vendor-test-part-3-demographic-effects
+  - https://eur-lex.europa.eu/eli/reg/2024/1689/oj
+  - https://web.archive.org/web/20250630192313/https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=3004
+  - https://eur-lex.europa.eu/eli/reg/2016/679/oj
+license: CC-BY-4.0
+en:
+  title: "Face recognition — biometric identification is an exception; confirm the use is lawful first"
+  summary:
+    - "Confirm the use is lawful before implementing; if it is a prohibited use, do not write the code."
+    - "Handle biometric templates in a non-reversible form, with consent and deletion paths."
+    - "Measure accuracy per demographic group; do not default to a single threshold."
+  prohibited:
+    - "Building prohibited uses (EU AI Act Article 5 uses, or surveillance banned in the jurisdiction), including implementing before the lawfulness check."
+    - "Building databases by untargeted scraping (collecting face images without consent or robots/terms checks)."
+    - "Storing biometric templates reversibly (keeping, logging or sharing them in a form that can restore the original image)."
+    - "Matching on a single threshold without measuring per-group error rates."
+    - "Matching without consent (continuous matching or tracking with no opt-out)."
+    - "No erasure path on deletion requests (templates, derived embeddings or caches left behind)."
+    - "Treating attribute estimation (age, gender, emotion, ethnicity) as if it were identification (it is error-prone and banned for some uses)."
+---
 # 顔認識 — 生体識別は例外手続き、用途の適法性を先に確認する
 
 > **適用条件**: 顔画像から個人を識別・検証・属性推定する
@@ -8,12 +38,10 @@
 > 書く・学習させる・組み込む場面。
 > 規模: 世界問題(生体データの規制は法域ごとに刑事責任まで含み、
 > EU AI Actは一部用途を全域で禁止する)。
-> 配布: data-science / web / cli / mcp(顔認識を扱うもの)。
 > 要約: (1)用途が適法かを実装前に確認する(禁止用途に当たれば
 > コードを書かない) (2)生体テンプレートは復元不能な形で扱い、
 > 同意と削除の経路を持つ (3)精度は集団別に測定し、単一しきい値の
 > 運用を既定にしない。詳細は本文。
-> Triggers: `(?i)\b(face|facial|biometric|biometrics|faceid|face_id|liveness|deepfake|recognition|arcface|insightface|retinaface)\b`.
 
 ## 事実
 
@@ -29,7 +57,7 @@ Part 3(2019)は、多くのアルゴリズムで偽陽性率が人種・性別�
 収集前に書面同意を要求し、違反1件あたり過失$1,000・故意$5,000の
 私的訴権を持つ。同種の法律が各州・各国で増えており、GDPRは
 個人の一意な識別のための生体データを第9条の特別カテゴリとする。
-出典: NIST IR 8280、EU AI Act、Illinois BIPA、GDPR(REGISTRY.ymlに記録)。
+出典: NIST IR 8280、EU AI Act、Illinois BIPA、GDPR(sourcesに記録)。
 
 ## 禁止パターン
 
@@ -74,9 +102,7 @@ for group, rows in eval_rows.groupby("demographic_group"):
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(face|facial|biometric|liveness|arcface|insightface|retinaface|deepface)\b`
-  hit時は本節の存在をassertし、用途区分の確認を促す。
+- 設定側トリガー(front matter の `triggers.config`)に当たったら、用途区分の確認を促す。
 - リリース判定に「用途区分の確認」「集団別評価表の添付」を必須項目と
   して置く。担当: プライバシー/法務のレビュー役。
 

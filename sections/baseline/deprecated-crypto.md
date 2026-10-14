@@ -1,17 +1,41 @@
-{# ethics: id=baseline-deprecated-crypto version=2026-10-06.1 status=draft
-   triggers=["md5","sha1","sha-1","des","3des","rc4","sslv3","tls1.0","tls1.1","sha1withrsa"]
-   sources=["https://csrc.nist.gov/pubs/sp/800/131/a/r2/final", "https://www.cryptrec.go.jp/en/index.html"] #}
+---
+id: baseline-deprecated-crypto
+version: "2026-10-06.1"
+status: draft
+placement: agents_md
+when: always
+obligations:
+  - obligation.crypto.no-deprecated-algorithms
+triggers:
+  keywords: ["md5", "sha1", "sha-1", "des", "3des", "rc4", "sslv3", "tls1.0", "tls1.1", "sha1withrsa"]
+  pattern: '(?i)\b(md5|sha-?1(?!6|384|512)|(?<!3)des(?!c)|3des|triple-?des|rc4|sslv?3|tls\s?1\.[01]|sha1withrsa|rsa[_ /-]?1024)\b'
+  config: '(?i)\b(md5|sha-?1|des|3des|rc4|sslv3|tls\s?1\.[01]|sha1withrsa)\b'
+sources:
+  - https://csrc.nist.gov/pubs/sp/800/131/a/r2/final
+  - https://www.cryptrec.go.jp/en/index.html
+license: CC-BY-4.0
+en:
+  title: "Deprecated cryptography — no new MD5/SHA-1 signatures, DES family, or TLS 1.0/1.1"
+  summary:
+    - "Do not adopt MD5 or SHA-1 for new signature or integrity uses."
+    - "Do not leave DES/3DES/RC4, SSLv3 or TLS 1.0/1.1 in new configuration."
+    - "Do not issue new RSA keys shorter than 2048 bits."
+  prohibited:
+    - "New MD5/SHA-1 use for signatures, MACs or integrity protection (non-security checksums without a 'non-security' note included)."
+    - "New DES/3DES/RC4 encryption paths (DESede, ARCFOUR, crypto.createCipher(\"des\"), ...)."
+    - "Server or CI deployment config that allows TLS 1.0/1.1 (old ssl_version / minVersion values)."
+    - "New RSA-1024 or sha1WithRSA certificates or signing requests."
+    - "Keeping legacy ciphers enabled by default for 'legacy compatibility' instead of isolating them."
+---
 # 枯れた暗号 — MD5/SHA1署名・DES系・TLS 1.0/1.1 を新規に書かない
 
 > **適用条件**: ハッシュ・署名・暗号化・TLS設定に触れる場面すべて。
 > 既存の使用箇所の棚卸しと置換も含む。
 > 規模: 世界問題(枯れた暗号の残留は国境を問わず侵害の入口になるが、
 > 義務の期限は国・調達ごとに異なる)。
-> 配布: library / cli / web(暗号・TLSを実装・設定するもの)。
 > 要約: (1)MD5・SHA-1の署名/完全性用途の新規採用をしない
 > (2)DES/3DES/RC4・SSLv3/TLS 1.0/1.1 を新規設定に残さない
 > (3)RSA は 2048bit 未満を新規に発行しない。詳細は本文。
-> Triggers: `(?i)\b(md5|sha-?1(?!6|384|512)|(?<!3)des(?!c)|3des|triple-?des|rc4|sslv?3|tls\s?1\.[01]|sha1withrsa|rsa[_ /-]?1024)\b`.
 
 ## 事実
 
@@ -27,7 +51,7 @@ MD5/SHA-1 署名・RC4・64bit ブロック暗号を電子政府推奨リスト�
 TLS は 1.2 以上 + 前方秘匿スイートを求める。EU CRA は脆弱性既知の
 製品を市場に出すことを禁じ(附属書 I)、枯れた暗号は ENISA ガイダンスが
 運用する「現状の技術水準(state of the art)」テストに落ちる。
-出典: NIST SP 800-131A・CRYPTREC 電子政府推奨暗号リスト(REGISTRY.yml に記録予定)。
+出典: NIST SP 800-131A・CRYPTREC 電子政府推奨暗号リスト(sourcesに記録)。
 
 ## 禁止パターン
 
@@ -69,9 +93,6 @@ ssl_version = TLSv1.2  # 可能なら TLSv1.3
 - 暗号資産の棚卸し(どの鍵長・算法がどこで使われているか)を版管理し、
   PCI DSS 4.0(Req. 4.2.1)や調達要件の期限に照らした削除計画を持つ。
   担当: 依存管理と同じレビュー役。
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(md5|sha-?1|des|3des|rc4|sslv3|tls\s?1\.[01]|sha1withrsa)\b`
-  hit時は本節の存在をassert。
 - テストベクタ・fixture の MD5/SHA-1 は「既知回答としての用途」を
   コメントで明示し、運用コードへの混入を防ぐ。
 

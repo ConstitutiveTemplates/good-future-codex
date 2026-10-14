@@ -1,6 +1,38 @@
-{# ethics: id=domain-scraping-law version=2026-09-24.1 status=active
-   triggers=["sitemap","robotparser","allowed_domains","user-agent","sui generis","database right","cfaa","breach-of-contract"]
-   sources=["https://cdn.ca9.uscourts.gov/datastore/opinions/2022/04/18/17-16783.pdf", "https://eur-lex.europa.eu/eli/dir/1996/9/oj", "https://www.bunka.go.jp/seisaku/chosakuken/aiandcopyright.html", "https://laws.e-gov.go.jp/law/411AC0000000128", "https://www.rfc-editor.org/rfc/rfc9309.html", "https://eur-lex.europa.eu/eli/reg/2016/679/oj", "https://www.ppc.go.jp/personalinfo/legal/"] #}
+---
+id: domain-scraping-law
+version: "2026-09-24.1"
+status: active
+placement: agents_md
+when: scraping
+obligations:
+  - obligation.copyright.ai-training-data-use
+triggers:
+  keywords: ["sitemap", "robotparser", "allowed_domains", "user-agent", "sui generis", "database right", "cfaa", "breach-of-contract"]
+  pattern: '(?i)\b(sitemap|robotparser|allowed_domains|user-agent|sui generis|database right|cfaa|breach-of-contract)\b'
+  config: '(?i)\b(sitemap|robotparser|allowed_domains|user-agent|sui generis|database right|cfaa|breach-of-contract)\b'
+sources:
+  - https://cdn.ca9.uscourts.gov/datastore/opinions/2022/04/18/17-16783.pdf
+  - https://eur-lex.europa.eu/eli/dir/1996/9/oj
+  - https://www.bunka.go.jp/seisaku/chosakuken/aiandcopyright.html
+  - https://laws.e-gov.go.jp/law/411AC0000000128
+  - https://www.rfc-editor.org/rfc/rfc9309.html
+  - https://eur-lex.europa.eu/eli/reg/2016/679/oj
+  - https://www.ppc.go.jp/personalinfo/legal/
+license: CC-BY-4.0
+en:
+  title: "Scraping legality — check rights, contracts and personal data before fetching"
+  summary:
+    - "Settle whether you may fetch from each site's terms and robots.txt first."
+    - "Even for public data, extracting a substantial part of a database or redistributing expression can infringe other rights."
+    - "Personal data is regulated both when fetched and when processed."
+  prohibited:
+    - "Circumventing access control (bypassing login, continuing after being blocked, IP rotation to evade rate limits or bans, generating CAPTCHA solvers); this is unauthorised access, not scraping."
+    - "Ignoring robots.txt refusals (ROBOTSTXT_OBEY=False, spoofed User-Agent, direct access to disallowed paths)."
+    - "Extracting and reusing substantial parts (catalogues, directories, price data that may carry the EU database right) without assessment."
+    - "Redistributing on the assumption public means free (republishing fetched text, images or code without a rights check)."
+    - "Fetching and storing personal data with no legal basis, purpose or deletion path."
+    - "Justifying worldwide use from one jurisdiction (treating 'fine under the US CFAA' as 'fine under EU database right and the GDPR')."
+---
 # スクレイピングの適法性 — 取得の前に権利・契約・個人情報を確認する
 
 > **適用条件**: 第三者のウェブページやAPIからデータを取得するコード
@@ -9,12 +41,10 @@
 > 有無を確かめないまま取得を始めようとしているなら、本節を先に読む。
 > 規模: 世界問題(取得の適法性は法域ごとに分立し、EU・米国・日本の
 > いずれの法も関係し得る)。
-> 配布: cli(取得コードを書くもの)。
 > 要約: (1)取得の可否はサイトごとの契約とrobots.txtで先に確定する
 > (2)公開データでも、データベースの実質部分の抽出や表現の再配布は
 > 別の権利を侵害し得る (3)個人情報は取得も処理も規制の対象になる。
 > 詳細は本文。
-> Triggers: `(?i)\b(sitemap|robotparser|allowed_domains|user-agent|sui generis|database right|cfaa|breach-of-contract)\b`.
 
 ## 事実
 
@@ -54,7 +84,7 @@
 
 出典: hiQ Labs v. LinkedIn(9th Cir. 2022)、EU指令96/9/EC、文化庁
 「AIと著作権に関する考え方について」、不正アクセス禁止法、RFC 9309、
-GDPR、個人情報保護法(REGISTRY.ymlに記録)。
+GDPR、個人情報保護法(sourcesに記録)。
 
 ## 禁止パターン
 
@@ -107,9 +137,7 @@ def fetch(source: SourcePolicy, url: str) -> bytes:
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(sitemap|robotparser|allowed_domains|user-agent|sui generis|database right|cfaa|breach-of-contract)\b`
-  hit時は本節の存在をassertし、取得元ポリシーの確認を促す。
+- 設定側トリガー(front matter の `triggers.config`)に当たったら、取得元ポリシーの確認を促す。
 - 取得コードのレビュー項目に「取得元ごとの robots/ToS/権利区分の記録」
   を置く。担当: データ取得を実装するレビュー役と、法務・コンプライアンス
   の確認役。

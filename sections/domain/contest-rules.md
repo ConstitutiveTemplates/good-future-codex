@@ -1,6 +1,36 @@
-{# ethics: id=domain-contest-rules version=2026-09-24.1 status=active
-   triggers=["atcoder","leetcode","codeforces","yukicoder","kattis","online-judge"]
-   sources=["https://info.atcoder.jp/entry/llm-rules-ja", "https://atcoder.jp/posts/1347", "https://icpc.global/regionals/rules", "https://leetcode.com/contest/", "https://codeforces.com/", "https://open.kattis.com/"] #}
+---
+id: domain-contest-rules
+version: "2026-09-24.1"
+status: active
+placement: agents_md
+when: oj_code
+obligations:
+  - obligation.ai.contest-rules-compliance
+triggers:
+  keywords: ["atcoder", "leetcode", "codeforces", "yukicoder", "kattis", "online-judge"]
+  pattern: '(?i)\b(atcoder|leetcode|codeforces|yukicoder|aoj|kattis|competitive-programming|online-judge|kattisrc|oj\s+submit)\b'
+  config: '(?i)\b(atcoder|leetcode|codeforces|yukicoder|aoj|kattis|competitive-programming|online-judge|kattisrc|oj\s+submit)\b'
+sources:
+  - https://info.atcoder.jp/entry/llm-rules-ja
+  - https://atcoder.jp/posts/1347
+  - https://icpc.global/regionals/rules
+  - https://leetcode.com/contest/
+  - https://codeforces.com/
+  - https://open.kattis.com/
+license: CC-BY-4.0
+en:
+  title: "Contest rules — AI use differs per contest, and the submitter is responsible"
+  summary:
+    - "Whether AI may be used differs by contest and over time; check the current rules before generating or submitting."
+    - "When the rules are unclear, treat AI use as prohibited."
+    - "The submitter is responsible; multiple accounts and rating manipulation are banned on every judge."
+  prohibited:
+    - "Having AI generate solutions in a contest whose rules forbid it (e.g. leaving code completion on during an AtCoder ABC/ARC/AGC)."
+    - "Submitting without checking the rules ('it is probably allowed')."
+    - "AI use beyond the exceptions the rules allow (AtCoder's translation exception covers translation with the prescribed preamble only, not summaries, solution hints or debugging)."
+    - "Multiple accounts, rating manipulation, account sharing or proxy submission."
+    - "Leaking problem statements or solutions to third parties during a contest."
+---
 # コンテスト規約 — AI利用は大会ごとに違い、提出は本人の責任
 
 > **適用条件**: 競技プログラミング・オンラインジャッジの解答コードを
@@ -8,12 +38,10 @@
 > yukicoder / AOJ / Kattis / その他のジャッジ)。
 > 規模: 世界問題(各ジャッジが独自の規約を制定・改定し、法域としての
 > 統一規則は存在しない)。
-> 配布: online-judge(提出コードを書くもの)。
 > 要約: (1)AI利用の可否は大会・時期ごとに異なるので、生成・提出の前に
 > 現行規約を確認する (2)規約が不明なときは禁止として扱う
 > (3)提出は本人の責任であり、複数アカウント・レーティング操作は
 > どのジャッジでも禁止される。詳細は本文。
-> Triggers: `(?i)\b(atcoder|leetcode|codeforces|yukicoder|aoj|kattis|competitive-programming|online-judge|kattisrc|oj\s+submit)\b`.
 
 ## 事実
 
@@ -39,7 +67,7 @@
   問題の漏洩は、どのジャッジでも禁止され、失格・BANの対象になる。
 
 出典: AtCoder「生成AI対策ルール」・関連アナウンス、ICPC Regional Rules、
-各ジャッジの規約(REGISTRY.ymlに記録)。
+各ジャッジの規約(sourcesに記録)。
 
 ## 禁止パターン
 
@@ -73,9 +101,7 @@ def contest_allows_ai(judge: str, rules_url: str, ai_allowed: bool | None) -> bo
 
 ## 運用チェック
 
-- 設定側トリガー(Copier QA L1用):
-  `(?i)\b(atcoder|leetcode|codeforces|yukicoder|aoj|kattis|competitive-programming|online-judge|kattisrc|oj\s+submit)\b`
-  hit時は本節の存在をassertし、現行規約の確認を促す。
+- 設定側トリガー(front matter の `triggers.config`)に当たったら、現行規約の確認を促す。
 - 提出前チェックの項目に「現行規約の確認(URL・日付)」を置く。
   担当: 提出する本人と、提出物をレビューする役。
 

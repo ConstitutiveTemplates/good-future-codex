@@ -73,7 +73,7 @@ def check_upstream_project_status(
     notes: list[str] = []
     if not law_map_dir.is_dir():
         return notes
-    sec_id = origin.replace(".md", "").replace("/", "-")
+    sec_id = origin.removesuffix(".md").replace("/", "-")
     for path in sorted((law_map_dir / OBLIGATIONS_SUBDIR).rglob("*.yml")):
         if path.name.startswith("_"):
             continue
@@ -84,3 +84,24 @@ def check_upstream_project_status(
         notes.extend(_obligation_notes(data, ob_id=ob_id, sec_id=sec_id,
                                        url=url, open_law_dir=open_law_dir))
     return notes
+
+
+def obligation_sections(law_map_dir: Path = REPO.parent / "law-map") -> dict[str, set[str]] | None:
+    """Section id -> law-map obligation ids that list it in ``related_sections``.
+
+    None when no law-map checkout sits next to this repo.
+    """
+    root = law_map_dir / OBLIGATIONS_SUBDIR
+    if not root.is_dir():
+        return None
+    links: dict[str, set[str]] = {}
+    for path in sorted(root.rglob("*.yml")):
+        if path.name.startswith("_"):
+            continue
+        data = _load_obligation_doc(path)
+        if data is None:
+            continue
+        ob_id = str(data.get("id") or path.stem)
+        for sec_id in data.get("related_sections", []) or []:
+            links.setdefault(str(sec_id), set()).add(ob_id)
+    return links
