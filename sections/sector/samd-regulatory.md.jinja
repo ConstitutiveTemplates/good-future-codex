@@ -1,4 +1,4 @@
-{# ethics: id=sector-samd-regulatory version=2026-09-21.1 status=active
+{# ethics: id=sector-samd-regulatory version=2026-10-15.1 status=active
    triggers=["samd","pmda","fda","pccp","clinical","diagnosis"]
    sources=["https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial-intelligence", "https://eur-lex.europa.eu/eli/reg/2017/745/oj", "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"] #}
 # 医療SaMD — 継続学習は承認済み変更限界の中で、判断は人間と共に
@@ -25,9 +25,11 @@ software functionsのためのPCCP(Predetermined Change Control Plan)
 に関する最終ガイダンスを発行し、開発初期に「将来学習・進化する内容と
 変更限界、評価方法」を申請・審査する制度を確立した。欧州はMDRの要件に
 加え、EU AI Act(2024-08-01発効)下で高リスクAIシステムの要件が重なり、
-CE適合性評価と市販後監視(PMS)が必要になる。AI Actは2026-08-02に
-一般適用となり、他の規制対象製品(医療機器等)に組み込まれる高リスク
-システムは2027-08-02までの適用となっている。
+CE適合性評価と市販後監視(PMS)が必要になる。AI Actの高リスク義務は
+当初2026-08-02一般適用の予定だったが、AI Omnibus(2026-07-27発効)で
+延期され、単体の高リスク(附属書III)は2027-12-02、他の規制対象製品
+(医療機器等、附属書I)に組み込まれる高リスクシステムは2028-08-02から
+適用となる。
 出典: FDA PCCPガイダンス、EUR-Lex(MDR/AI Act)(REGISTRY.ymlに記録)。
 
 ## 禁止パターン
@@ -79,8 +81,9 @@ if not pccp_allows(eval_on_locked_suite(candidate_model)):
 
 ## 制度変更ウォッチ
 
-- 変更予告: EU AI Act高リスク義務の適用(2026-08-02一般適用、
-  組込み型は2027-08-02)が直近の確定事項。確度: 施行済(日程確定)。
+- 変更予告: EU AI Act高リスク義務の適用(AI Omnibusによる延期後、
+  単体は2027-12-02、医療機器等への組込み型は2028-08-02)が直近の確定事項。
+  確度: 施行済(延期後の日程確定、最終確認: 2026-10-15)。
 - 確認TODO: IDATENの公式一次ページ(厚労省)とPCCPの最新Q&Aを確認
   (review_by: 2026-12-18)。
 - 影響TODO: 自プロジェクトが医療用途に触れる場合、クラス分類の

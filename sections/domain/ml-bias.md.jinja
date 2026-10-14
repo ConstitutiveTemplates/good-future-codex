@@ -1,4 +1,4 @@
-{# ethics: id=domain-ml-bias version=2026-09-21.3 status=active
+{# ethics: id=domain-ml-bias version=2026-10-15.1 status=active
    triggers=["fairness","bias","subgroup","xai","demographic"]
    sources=["https://www.nejm.org/doi/full/10.1056/NEJMc1919366", "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"] #}
 # MLバイアス — 集団別評価・説明可能性・人間確認を評価に組み込む
@@ -70,9 +70,11 @@ write_model_card(subgroup_metrics, intervals)  # リリース物に同梱する
 
 ## 制度変更ウォッチ
 
-- 変更予告: EU AI Actの高リスク義務は段階適用(2026-08-02一般適用、
-  他の規制対象製品に組み込まれる高リスクは2027-08-02)。
-  確度: 施行済(スケジュール確定)。
+- 変更予告: EU AI Actの高リスク義務は段階適用。当初の日程
+  (2026-08-02一般適用、製品組込み型は2027-08-02)はAI Omnibus
+  (2026-07-27発効)で延期され、単体の高リスク(附属書III)は2027-12-02、
+  他の規制対象製品に組み込まれる高リスク(附属書I)は2028-08-02から適用。
+  確度: 施行済(延期後のスケジュール確定、最終確認: 2026-10-15)。
 - 確認TODO: 第10条・FRIAの実務ガイダンス(委員会ガイドライン)の公表を確認
   (review_by: 2026-12-18)。
 - 影響TODO: 自プロジェクトの評価レポートテンプレートに集団別表を

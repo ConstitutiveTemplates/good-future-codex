@@ -1,4 +1,4 @@
-{# ethics: id=domain-face-recognition version=2026-10-06.1 status=active
+{# ethics: id=domain-face-recognition version=2026-10-15.1 status=active
    triggers=["face","facial","biometric","recognition","bipa","liveness"]
    sources=["https://www.nist.gov/publications/face-recognition-vendor-test-part-3-demographic-effects", "https://eur-lex.europa.eu/eli/reg/2024/1689/oj", "https://web.archive.org/web/20250630192313/https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=3004", "https://eur-lex.europa.eu/eli/reg/2016/679/oj"] #}
 # 顔認識 — 生体識別は例外手続き、用途の適法性を先に確認する
@@ -82,8 +82,10 @@ for group, rows in eval_rows.groupby("demographic_group"):
 
 ## 制度変更ウォッチ
 
-- 変更予告: EU AI Actの生体識別関連は段階適用(第5条の禁止は
-  2025-02-02から、高リスク義務は2026-08-02一般適用)。確度: 施行済。
+- 変更予告: EU AI Actの生体識別関連は段階適用。第5条の禁止は
+  2025-02-02から適用済み。高リスク義務(附属書IIIの生体識別等)は当初
+  2026-08-02の予定だったが、AI Omnibus(2026-07-27発効)で2027-12-02に
+  延期された。確度: 施行済(最終確認: 2026-10-15)。
 - 確認TODO: 米国各州の生体情報法の追加(およびBIPA判例の損害額
   算定)を確認する(review_by: 2027-03-31)。
 - 影響TODO: 運用中のしきい値を集団別誤り率の観点で再評価し、
